@@ -2,6 +2,7 @@ const express = require('express');
 const sql = require('mssql');
 const cors = require('cors');
 const path = require('path');
+const emailService = require('./services/emailService');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -313,6 +314,113 @@ app.get('/dajusca-styles.css', (req, res) => {
 
 app.get('/dajusca-script.js', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'dajusca-script.js'));
+});
+
+// ========================
+// RUTAS API PARA CONTACTO
+// ========================
+
+// Endpoint para procesar formulario de contacto
+app.post('/api/contact', async (req, res) => {
+    try {
+        const { nombre, email, telefono, tipoConsulta, mensaje } = req.body;
+
+        // Validación básica
+        if (!nombre || !email || !mensaje || !tipoConsulta) {
+            return res.status(400).json({
+                success: false,
+                message: 'Faltan campos obligatorios (nombre, email, mensaje, tipo de consulta)'
+            });
+        }
+
+        // Validar formato de email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({
+                success: false,
+                message: 'El formato del email no es válido'
+            });
+        }
+
+        // Limpiar y sanitizar datos
+        const contactData = {
+            nombre: nombre.trim(),
+            email: email.trim().toLowerCase(),
+            telefono: telefono ? telefono.trim() : '',
+            tipoConsulta: tipoConsulta.trim(),
+            mensaje: mensaje.trim()
+        };
+
+        console.log('📧 Procesando solicitud de contacto:', {
+            nombre: contactData.nombre,
+            email: contactData.email,
+            tipo: contactData.tipoConsulta
+        });
+
+        // Enviar emails
+        const emailResult = await emailService.sendContactEmail(contactData);
+
+        if (emailResult.success) {
+            // Opcional: Guardar en base de datos
+            try {
+                if (pool) {
+                    await pool.request()
+                        .input('nombre', sql.VarChar, contactData.nombre)
+                        .input('email', sql.VarChar, contactData.email)
+                        .input('telefono', sql.VarChar, contactData.telefono)
+                        .input('tipoConsulta', sql.VarChar, contactData.tipoConsulta)
+                        .input('mensaje', sql.Text, contactData.mensaje)
+                        .input('fechaCreacion', sql.DateTime, new Date())
+                        .query(`
+                            INSERT INTO Contactos (nombre, email, telefono, tipoConsulta, mensaje, fechaCreacion)
+                            VALUES (@nombre, @email, @telefono, @tipoConsulta, @mensaje, @fechaCreacion)
+                        `);
+                    console.log('✅ Contacto guardado en base de datos');
+                }
+            } catch (dbError) {
+                console.log('⚠️ Error guardando en BD (continuando):', dbError.message);
+                // No fallar si la BD no está disponible
+            }
+
+            res.json({
+                success: true,
+                message: 'Mensaje enviado correctamente. Te contactaremos pronto.',
+                data: {
+                    nombre: contactData.nombre,
+                    tipoConsulta: contactData.tipoConsulta,
+                    fecha: new Date().toISOString()
+                }
+            });
+
+        } else {
+            console.error('❌ Error enviando email:', emailResult);
+            res.status(500).json({
+                success: false,
+                message: 'Error enviando el mensaje. Por favor intenta nuevamente.'
+            });
+        }
+
+    } catch (error) {
+        console.error('❌ Error procesando contacto:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error interno del servidor. Por favor intenta más tarde.'
+        });
+    }
+});
+
+// Endpoint para verificar configuración de email
+app.get('/api/email/verify', async (req, res) => {
+    try {
+        const verification = await emailService.verifyConnection();
+        res.json(verification);
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error verificando configuración de email',
+            error: error.message
+        });
+    }
 });
 
 // Manejo de errores global

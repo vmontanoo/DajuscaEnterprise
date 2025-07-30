@@ -644,39 +644,58 @@
                     </div>
                 </div>
                 
-                <form class="contact-form">
+                <form class="contact-form" id="contactForm">
                     <div class="form-row">
                         <div class="form-group">
+                            <label for="nombre">Nombre Completo *</label>
                             <input type="text" id="nombre" name="nombre" placeholder="Tu nombre completo" required>
                         </div>
                         <div class="form-group">
-                            <input type="email" id="email" name="email" placeholder="Tu email" required>
+                            <label for="email">Email *</label>
+                            <input type="email" id="email" name="email" placeholder="tu.email@ejemplo.com" required>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <input type="tel" id="telefono" name="telefono" placeholder="Tu teléfono">
+                            <label for="telefono">Teléfono</label>
+                            <input type="tel" id="telefono" name="telefono" placeholder="+57 300 123 4567">
                         </div>
                         <div class="form-group">
-                            <select id="tipo-mueble" name="tipo-mueble" required>
-                                <option value="">Tipo de mueble</option>
-                                <option value="repisas">Repisas</option>
-                                <option value="gaveteros">Gaveteros</option>
-                                <option value="closets">Closets</option>
-                                <option value="entretenimiento">Centro de Entretenimiento</option>
-                                <option value="cocina">Cocina Integral</option>
-                                <option value="escritorios">Escritorios</option>
-                                <option value="otro">Otro</option>
+                            <label for="tipoConsulta">Tipo de Consulta *</label>
+                            <select id="tipoConsulta" name="tipoConsulta" required>
+                                <option value="">Selecciona el tipo de consulta</option>
+                                <option value="cotizacion">💰 Solicitar Cotización</option>
+                                <option value="informacion">ℹ️ Información de Productos</option>
+                                <option value="catalogo">📋 Solicitar Catálogo</option>
+                                <option value="personalizado">🎨 Diseño Personalizado</option>
+                                <option value="reparacion">🔧 Servicio de Reparación</option>
+                                <option value="instalacion">🏗️ Servicio de Instalación</option>
+                                <option value="garantia">🛡️ Consulta de Garantía</option>
+                                <option value="otro">❓ Otra Consulta</option>
                             </select>
                         </div>
                     </div>
                     <div class="form-group">
-                        <textarea id="mensaje" name="mensaje" placeholder="Cuéntanos sobre tu proyecto..." rows="5" required></textarea>
+                        <label for="mensaje">Mensaje *</label>
+                        <textarea id="mensaje" name="mensaje" placeholder="Cuéntanos sobre tu proyecto, medidas aproximadas, estilo preferido, presupuesto estimado, etc..." rows="5" required></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary">
+                    
+                    <!-- Mensaje de estado del formulario -->
+                    <div id="formMessage" class="form-message" style="display: none;"></div>
+                    
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
                         <i class="fas fa-paper-plane"></i>
-                        Enviar Mensaje
+                        <span class="btn-text">Enviar Mensaje</span>
+                        <span class="btn-loading" style="display: none;">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            Enviando...
+                        </span>
                     </button>
+                    
+                    <p class="form-note">
+                        <i class="fas fa-shield-alt"></i>
+                        Tus datos están seguros. Solo los usaremos para contactarte sobre tu consulta.
+                    </p>
                 </form>
             </div>
         </div>

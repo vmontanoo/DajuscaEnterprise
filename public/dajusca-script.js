@@ -1845,10 +1845,297 @@ También puedes contactarnos directamente:
     }
 }
 
+// ===== CONTACT FORM FUNCTIONALITY =====
+class ContactFormHandler {
+    constructor() {
+        this.form = document.getElementById('contactForm');
+        this.submitBtn = document.getElementById('submitBtn');
+        this.formMessage = document.getElementById('formMessage');
+        
+        if (this.form) {
+            this.initForm();
+        }
+    }
+
+    initForm() {
+        this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+        
+        // Validación en tiempo real
+        const inputs = this.form.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('blur', () => this.validateField(input));
+            input.addEventListener('input', () => this.clearFieldError(input));
+        });
+    }
+
+    async handleSubmit(e) {
+        e.preventDefault();
+        
+        // Validar formulario
+        if (!this.validateForm()) {
+            this.showMessage('Por favor completa todos los campos obligatorios correctamente.', 'error');
+            return;
+        }
+
+        // Mostrar estado de carga
+        this.setLoading(true);
+        this.showMessage('Enviando mensaje...', 'loading');
+
+        try {
+            // Recopilar datos del formulario
+            const formData = new FormData(this.form);
+            const contactData = {
+                nombre: formData.get('nombre'),
+                email: formData.get('email'),
+                telefono: formData.get('telefono'),
+                tipoConsulta: formData.get('tipoConsulta'),
+                mensaje: formData.get('mensaje')
+            };
+
+            // Enviar datos al servidor
+            const response = await fetch('/api/contact', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(contactData)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                this.showMessage(
+                    '¡Mensaje enviado exitosamente! Te contactaremos en las próximas 24 horas. También recibirás un email de confirmación.',
+                    'success'
+                );
+                this.resetForm();
+                
+                // Opcional: mostrar notificación adicional
+                this.showSuccessNotification(contactData.nombre);
+                
+            } else {
+                this.showMessage(result.message || 'Error enviando el mensaje. Por favor intenta nuevamente.', 'error');
+            }
+
+        } catch (error) {
+            console.error('Error enviando formulario:', error);
+            this.showMessage(
+                'Error de conexión. Por favor verifica tu internet e intenta nuevamente.',
+                'error'
+            );
+        } finally {
+            this.setLoading(false);
+        }
+    }
+
+    validateForm() {
+        const requiredFields = ['nombre', 'email', 'tipoConsulta', 'mensaje'];
+        let isValid = true;
+
+        requiredFields.forEach(fieldName => {
+            const field = this.form.querySelector(`[name="${fieldName}"]`);
+            if (!this.validateField(field)) {
+                isValid = false;
+            }
+        });
+
+        return isValid;
+    }
+
+    validateField(field) {
+        const value = field.value.trim();
+        let isValid = true;
+        let errorMessage = '';
+
+        // Limpiar errores previos
+        this.clearFieldError(field);
+
+        // Validaciones específicas
+        switch (field.name) {
+            case 'nombre':
+                if (!value) {
+                    errorMessage = 'El nombre es obligatorio';
+                    isValid = false;
+                } else if (value.length < 2) {
+                    errorMessage = 'El nombre debe tener al menos 2 caracteres';
+                    isValid = false;
+                }
+                break;
+
+            case 'email':
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!value) {
+                    errorMessage = 'El email es obligatorio';
+                    isValid = false;
+                } else if (!emailRegex.test(value)) {
+                    errorMessage = 'Por favor ingresa un email válido';
+                    isValid = false;
+                }
+                break;
+
+            case 'telefono':
+                if (value && value.length < 7) {
+                    errorMessage = 'Por favor ingresa un teléfono válido';
+                    isValid = false;
+                }
+                break;
+
+            case 'tipoConsulta':
+                if (!value) {
+                    errorMessage = 'Por favor selecciona un tipo de consulta';
+                    isValid = false;
+                }
+                break;
+
+            case 'mensaje':
+                if (!value) {
+                    errorMessage = 'El mensaje es obligatorio';
+                    isValid = false;
+                } else if (value.length < 10) {
+                    errorMessage = 'El mensaje debe tener al menos 10 caracteres';
+                    isValid = false;
+                }
+                break;
+        }
+
+        // Aplicar estilos de validación
+        if (isValid) {
+            field.classList.remove('invalid');
+            field.classList.add('valid');
+        } else {
+            field.classList.remove('valid');
+            field.classList.add('invalid');
+            this.showFieldError(field, errorMessage);
+        }
+
+        return isValid;
+    }
+
+    showFieldError(field, message) {
+        // Remover error previo
+        const existingError = field.parentNode.querySelector('.field-error');
+        if (existingError) {
+            existingError.remove();
+        }
+
+        // Agregar nuevo error
+        const errorElement = document.createElement('span');
+        errorElement.className = 'field-error';
+        errorElement.textContent = message;
+        field.parentNode.appendChild(errorElement);
+    }
+
+    clearFieldError(field) {
+        const errorElement = field.parentNode.querySelector('.field-error');
+        if (errorElement) {
+            errorElement.remove();
+        }
+        field.classList.remove('invalid');
+    }
+
+    showMessage(message, type) {
+        this.formMessage.textContent = message;
+        this.formMessage.className = `form-message ${type}`;
+        this.formMessage.style.display = 'block';
+
+        // Auto-ocultar mensajes de éxito después de 8 segundos
+        if (type === 'success') {
+            setTimeout(() => {
+                this.formMessage.style.display = 'none';
+            }, 8000);
+        }
+    }
+
+    setLoading(loading) {
+        const btnText = this.submitBtn.querySelector('.btn-text');
+        const btnLoading = this.submitBtn.querySelector('.btn-loading');
+
+        if (loading) {
+            this.submitBtn.disabled = true;
+            btnText.style.display = 'none';
+            btnLoading.style.display = 'inline-flex';
+            this.form.classList.add('submitting');
+        } else {
+            this.submitBtn.disabled = false;
+            btnText.style.display = 'inline';
+            btnLoading.style.display = 'none';
+            this.form.classList.remove('submitting');
+        }
+    }
+
+    resetForm() {
+        this.form.reset();
+        
+        // Limpiar validaciones
+        const fields = this.form.querySelectorAll('input, select, textarea');
+        fields.forEach(field => {
+            field.classList.remove('valid', 'invalid');
+            this.clearFieldError(field);
+        });
+    }
+
+    showSuccessNotification(nombre) {
+        // Crear notificación flotante
+        const notification = document.createElement('div');
+        notification.innerHTML = `
+            <div style="
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #28a745, #20c997);
+                color: white;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                z-index: 10001;
+                max-width: 350px;
+                animation: slideInRight 0.5s ease;
+            ">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-check-circle" style="font-size: 1.5rem;"></i>
+                    <div>
+                        <h4 style="margin: 0; font-size: 1rem;">¡Gracias ${nombre}!</h4>
+                        <p style="margin: 5px 0 0 0; font-size: 0.9rem; opacity: 0.9;">
+                            Tu mensaje ha sido enviado exitosamente.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(notification);
+
+        // Remover después de 5 segundos
+        setTimeout(() => {
+            notification.style.animation = 'slideOutRight 0.5s ease';
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 500);
+        }, 5000);
+    }
+}
+
+// Agregar animaciones CSS para las notificaciones
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideInRight {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOutRight {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+    }
+`;
+document.head.appendChild(style);
+
 // Actualizar todos los TODOs como completados
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize chatbot
     const chatbot = new DajuscaChatbot();
+    
+    // Initialize contact form
+    const contactForm = new ContactFormHandler();
     
     // Marcar todas las funcionalidades como implementadas
     console.log('✅ Catálogo interactivo con filtros - Implementado');
@@ -1856,10 +2143,11 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('✅ Gráficos de estadísticas animados - Implementado');
     console.log('✅ Testimonios con slider - Implementado');
     console.log('✅ Galería de trabajos realizados - Implementado');
-    console.log('✅ Formulario de contacto funcional - Implementado');
+    console.log('✅ Formulario de contacto con email - Implementado');
     console.log('✅ Navegación responsive - Implementado');
     console.log('✅ Animaciones y efectos - Implementado');
     console.log('✅ Chatbot inteligente con FAQ - Implementado');
+    console.log('✅ Sistema de emails automático - Implementado');
 });
 
 console.log('🪑 DAJUSCA Script loaded successfully!');
