@@ -10,6 +10,13 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public')); // Servir archivos estáticos
+app.use(express.static('.', { 
+    setHeaders: (res, path) => {
+        if (path.endsWith('.html')) {
+            res.setHeader('Cache-Control', 'public, max-age=0');
+        }
+    }
+}));
 
 // Configuración de la base de datos SQL Server
 const dbConfig = {
@@ -296,7 +303,16 @@ app.post('/api/contacto', async (req, res) => {
 
 // Servir la página principal
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'dajusca.html'));
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Servir archivos estáticos adicionales
+app.get('/dajusca-styles.css', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'dajusca-styles.css'));
+});
+
+app.get('/dajusca-script.js', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'dajusca-script.js'));
 });
 
 // Manejo de errores global
