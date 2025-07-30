@@ -750,6 +750,60 @@
         </div>
     </div>
 
+    <!-- Chatbot -->
+    <div id="chatbot" class="chatbot">
+        <div class="chatbot-toggle" id="chatbotToggle">
+            <i class="fas fa-comments"></i>
+            <span class="chatbot-badge">1</span>
+        </div>
+        
+        <div class="chatbot-container" id="chatbotContainer">
+            <div class="chatbot-header">
+                <div class="chatbot-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="chatbot-info">
+                    <h4>Asistente DAJUSCA</h4>
+                    <span class="chatbot-status">En línea</span>
+                </div>
+                <button class="chatbot-close" id="chatbotClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="chatbot-messages" id="chatbotMessages">
+                <div class="message bot-message">
+                    <div class="message-content">
+                        <p>¡Hola! Soy el asistente virtual de DAJUSCA. ¿En qué puedo ayudarte hoy?</p>
+                    </div>
+                    <div class="message-time">Ahora</div>
+                </div>
+                
+                <div class="message bot-message">
+                    <div class="message-content">
+                        <p>Puedo responder preguntas sobre:</p>
+                        <ul class="quick-questions">
+                            <li><button class="quick-btn" data-question="precios">¿Cuáles son los precios?</button></li>
+                            <li><button class="quick-btn" data-question="tiempo">¿Cuánto tiempo toma la fabricación?</button></li>
+                            <li><button class="quick-btn" data-question="materiales">¿Qué materiales usan?</button></li>
+                            <li><button class="quick-btn" data-question="garantia">¿Tienen garantía?</button></li>
+                            <li><button class="quick-btn" data-question="medidas">¿Hacen muebles a medida?</button></li>
+                            <li><button class="quick-btn" data-question="contacto">¿Cómo los contacto?</button></li>
+                        </ul>
+                    </div>
+                    <div class="message-time">Ahora</div>
+                </div>
+            </div>
+            
+            <div class="chatbot-input">
+                <input type="text" id="chatbotInput" placeholder="Escribe tu pregunta...">
+                <button id="chatbotSend">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script src="dajusca-script.js"></script>
 </body>
 </html>

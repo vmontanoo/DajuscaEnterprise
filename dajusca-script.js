@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeContactForm();
     initializeAnimations();
     initializeCounters();
+    initializeChatbot();
     
     console.log('🪑 DAJUSCA - Muebles a Medida cargado exitosamente!');
 });
@@ -1450,3 +1451,281 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 console.log('🪑 DAJUSCA Script loaded successfully!');
+
+// ========================
+// CHATBOT
+// ========================
+function initializeChatbot() {
+    const chatbotToggle = document.getElementById('chatbotToggle');
+    const chatbotContainer = document.getElementById('chatbotContainer');
+    const chatbotClose = document.getElementById('chatbotClose');
+    const chatbotInput = document.getElementById('chatbotInput');
+    const chatbotSend = document.getElementById('chatbotSend');
+    const chatbotMessages = document.getElementById('chatbotMessages');
+    const quickButtons = document.querySelectorAll('.quick-btn');
+
+    // Base de conocimiento del chatbot
+    const chatbotKnowledge = {
+        precios: {
+            title: "Precios de nuestros muebles",
+            content: `Nuestros precios varían según el tipo de mueble y materiales:
+
+• Repisas: Desde $150.000 - $800.000
+• Gaveteros: Desde $300.000 - $1.200.000
+• Closets: Desde $800.000 - $3.500.000
+• Centros de Entretenimiento: Desde $500.000 - $2.000.000
+• Cocinas Integrales: Desde $2.500.000 - $8.000.000
+• Escritorios: Desde $400.000 - $1.500.000
+
+Los precios incluyen:
+✅ Diseño personalizado
+✅ Materiales de calidad
+✅ Fabricación artesanal
+✅ Instalación profesional
+✅ Garantía de 2 años
+
+¿Te gustaría que te ayude a calcular un presupuesto específico?`
+        },
+        tiempo: {
+            title: "Tiempo de fabricación",
+            content: `Nuestros tiempos de fabricación son:
+
+• Repisas simples: 3-5 días hábiles
+• Gaveteros: 7-10 días hábiles
+• Closets: 10-15 días hábiles
+• Centros de Entretenimiento: 8-12 días hábiles
+• Cocinas Integrales: 15-25 días hábiles
+• Escritorios: 5-8 días hábiles
+
+Factores que pueden afectar el tiempo:
+📏 Complejidad del diseño
+🪵 Materiales seleccionados
+📦 Disponibilidad de materiales
+🏠 Instalación en sitio
+
+¿Necesitas tu mueble para una fecha específica?`
+        },
+        materiales: {
+            title: "Materiales que utilizamos",
+            content: `Trabajamos con los mejores materiales:
+
+🪵 MADERAS:
+• Pino radiata (económica y resistente)
+• Cedro (aroma natural, repelente de insectos)
+• Roble (durabilidad excepcional)
+• Nogal (elegancia y resistencia)
+
+🔧 COMPLEMENTOS:
+• Bisagras Blum (premium)
+• Guías telescópicas
+• Tornillos especializados
+• Barnices y lacas de alta calidad
+
+🎨 ACABADOS:
+• Barniz mate o brillante
+• Laca poliuretánica
+• Pintura esmalte
+• Encerado natural
+
+Todos nuestros materiales son certificados y de primera calidad.`
+        },
+        garantia: {
+            title: "Garantía y servicio post-venta",
+            content: `Ofrecemos garantía completa en todos nuestros muebles:
+
+🛡️ GARANTÍA DE 2 AÑOS:
+• Estructura del mueble
+• Funcionamiento de cajones y puertas
+• Acabados y pinturas
+• Instalación profesional
+
+🔧 SERVICIO TÉCNICO:
+• Reparaciones en sitio
+• Ajustes y mantenimiento
+• Reposición de piezas
+• Asesoría técnica
+
+📞 CONTACTO:
+• WhatsApp: +57 300 123 4567
+• Email: servicio@dajusca.com
+• Horario: Lun-Vie 8AM-6PM
+
+Tu satisfacción es nuestra prioridad.`
+        },
+        medidas: {
+            title: "Muebles a medida",
+            content: `¡Absolutamente! Todos nuestros muebles son fabricados a medida:
+
+📐 SERVICIO DE MEDICIÓN:
+• Visita técnica gratuita
+• Medición profesional
+• Diseño personalizado
+• Presupuesto detallado
+
+🎯 VENTAJAS:
+• Aprovecha al máximo el espacio
+• Diseño único para tu hogar
+• Adaptado a tus necesidades
+• Instalación perfecta
+
+📋 PROCESO:
+1. Contacto inicial
+2. Visita de medición
+3. Diseño y cotización
+4. Aprobación del cliente
+5. Fabricación
+6. Instalación
+
+¿Te gustaría agendar una visita de medición?`
+        },
+        contacto: {
+            title: "Información de contacto",
+            content: `Estamos aquí para ayudarte:
+
+📍 DIRECCIÓN:
+Calle 45 #23-67, Bogotá, Colombia
+
+📞 TELÉFONOS:
+• Principal: +57 (1) 234-5678
+• WhatsApp: +57 300 123 4567
+• Celular: +57 310 987 6543
+
+📧 EMAIL:
+• General: info@dajusca.com
+• Ventas: ventas@dajusca.com
+• Servicio: servicio@dajusca.com
+
+⏰ HORARIOS:
+• Lunes a Viernes: 8:00 AM - 6:00 PM
+• Sábados: 9:00 AM - 2:00 PM
+• Domingos: Cerrado
+
+🌐 REDES SOCIALES:
+• Facebook: @dajuscamuebles
+• Instagram: @dajusca_muebles
+• YouTube: DAJUSCA Muebles
+
+¿En qué horario prefieres que te contactemos?`
+        }
+    };
+
+    // Función para agregar mensaje al chat
+    function addMessage(content, isUser = false, time = null) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+        
+        const messageContent = document.createElement('div');
+        messageContent.className = 'message-content';
+        
+        if (typeof content === 'string') {
+            messageContent.innerHTML = `<p>${content}</p>`;
+        } else {
+            messageContent.innerHTML = content;
+        }
+        
+        const messageTime = document.createElement('div');
+        messageTime.className = 'message-time';
+        messageTime.textContent = time || getCurrentTime();
+        
+        messageDiv.appendChild(messageContent);
+        messageDiv.appendChild(messageTime);
+        
+        chatbotMessages.appendChild(messageDiv);
+        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        
+        // Animación de entrada
+        messageDiv.style.opacity = '0';
+        messageDiv.style.transform = 'translateY(10px)';
+        setTimeout(() => {
+            messageDiv.style.transition = 'all 0.3s ease';
+            messageDiv.style.opacity = '1';
+            messageDiv.style.transform = 'translateY(0)';
+        }, 100);
+    }
+
+    // Función para obtener la hora actual
+    function getCurrentTime() {
+        const now = new Date();
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        return `${hours}:${minutes}`;
+    }
+
+    // Función para procesar la respuesta del chatbot
+    function processChatbotResponse(question) {
+        const response = chatbotKnowledge[question];
+        if (response) {
+            setTimeout(() => {
+                addMessage(`
+                    <h4 style="margin: 0 0 10px 0; color: var(--primary-wood);">${response.title}</h4>
+                    <div style="white-space: pre-line;">${response.content}</div>
+                `);
+            }, 500);
+        } else {
+            setTimeout(() => {
+                addMessage(`
+                    <p>Gracias por tu pregunta. Para obtener información más específica, te recomiendo:</p>
+                    <ul style="margin: 10px 0; padding-left: 20px;">
+                        <li>Contactarnos directamente al +57 (1) 234-5678</li>
+                        <li>Enviarnos un WhatsApp al +57 300 123 4567</li>
+                        <li>Agendar una visita de medición gratuita</li>
+                    </ul>
+                    <p>¿Hay algo más en lo que pueda ayudarte?</p>
+                `);
+            }, 500);
+        }
+    }
+
+    // Event listeners
+    chatbotToggle.addEventListener('click', () => {
+        chatbotContainer.classList.add('active');
+        chatbotToggle.style.display = 'none';
+        // Ocultar el badge cuando se abre el chat
+        const badge = chatbotToggle.querySelector('.chatbot-badge');
+        if (badge) badge.style.display = 'none';
+    });
+
+    chatbotClose.addEventListener('click', () => {
+        chatbotContainer.classList.remove('active');
+        chatbotToggle.style.display = 'flex';
+    });
+
+    // Botones de preguntas rápidas
+    quickButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const question = button.getAttribute('data-question');
+            addMessage(button.textContent, true);
+            processChatbotResponse(question);
+        });
+    });
+
+    // Envío de mensaje con Enter
+    chatbotInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && chatbotInput.value.trim()) {
+            sendMessage();
+        }
+    });
+
+    // Envío de mensaje con botón
+    chatbotSend.addEventListener('click', sendMessage);
+
+    function sendMessage() {
+        const message = chatbotInput.value.trim();
+        if (message) {
+            addMessage(message, true);
+            chatbotInput.value = '';
+            
+            // Simular respuesta del chatbot
+            setTimeout(() => {
+                addMessage('Gracias por tu mensaje. Un asesor se pondrá en contacto contigo pronto. Mientras tanto, puedes usar los botones de preguntas frecuentes o contactarnos directamente.');
+            }, 1000);
+        }
+    }
+
+    // Mostrar el chatbot después de 5 segundos
+    setTimeout(() => {
+        chatbotToggle.style.animation = 'pulse 2s infinite';
+    }, 5000);
+
+    console.log('🤖 Chatbot DAJUSCA inicializado correctamente!');
+}
