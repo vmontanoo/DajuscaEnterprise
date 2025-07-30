@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DAJUSCA - Muebles a Medida | Diseño y Creación de Muebles</title>
+    <meta name="description" content="DAJUSCA - Especialistas en diseño y creación de muebles personalizados. Repisas, gaveteros, closets, cocinas integrales y más.">
+    <link rel="stylesheet" href="dajusca-styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <h2>DAJUSCA</h2>
+                    <span>Muebles a Medida</span>
+                </div>
+                <ul class="nav-menu">
+                    <li class="nav-item"><a href="#inicio" class="nav-link">Inicio</a></li>
+                    <li class="nav-item"><a href="#catalogo" class="nav-link">Catálogo</a></li>
+                    <li class="nav-item"><a href="#configurador" class="nav-link">Configurador 3D</a></li>
+                    <li class="nav-item"><a href="#galeria" class="nav-link">Galería</a></li>
+                    <li class="nav-item"><a href="#testimonios" class="nav-link">Testimonios</a></li>
+                    <li class="nav-item"><a href="#contacto" class="nav-link">Contacto</a></li>
+                </ul>
+                <div class="nav-toggle">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="inicio" class="hero">
+        <div class="hero-background">
+            <div class="hero-overlay"></div>
+        </div>
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">Creamos Muebles <span class="highlight">Únicos</span> para tu Hogar</h1>
+                <p class="hero-description">
+                    En DAJUSCA transformamos tus ideas en muebles excepcionales. 
+                    Diseñamos, armamos y creamos cada pieza con la más alta calidad y atención al detalle.
+                </p>
+                <div class="hero-buttons">
+                    <a href="#catalogo" class="btn btn-primary">
+                        <i class="fas fa-eye"></i>
+                        Ver Catálogo
+                    </a>
+                    <a href="#configurador" class="btn btn-secondary">
+                        <i class="fas fa-cube"></i>
+                        Configurador 3D
+                    </a>
+                </div>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <div class="stat-number" data-target="500">0</div>
+                    <div class="stat-label">Muebles Creados</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-target="450">0</div>
+                    <div class="stat-label">Clientes Satisfechos</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-target="15">0</div>
+                    <div class="stat-label">Años de Experiencia</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Catálogo -->
+    <section id="catalogo" class="catalog">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Nuestro Catálogo</h2>
+                <p class="section-subtitle">Descubre nuestra amplia variedad de muebles diseñados especialmente para ti</p>
+            </div>
+            
+            <div class="catalog-filters">
+                <button class="filter-btn active" data-filter="all">Todos</button>
+                <button class="filter-btn" data-filter="repisas">Repisas</button>
+                <button class="filter-btn" data-filter="gaveteros">Gaveteros</button>
+                <button class="filter-btn" data-filter="closets">Closets</button>
+                <button class="filter-btn" data-filter="entretenimiento">Centros de Entretenimiento</button>
+                <button class="filter-btn" data-filter="cocina">Cocinas Integrales</button>
+                <button class="filter-btn" data-filter="escritorios">Escritorios</button>
+            </div>
+
+            <div class="catalog-grid">
+                <!-- Repisas -->
+                <div class="catalog-item" data-category="repisas">
+                    <div class="catalog-image">
+                        <div class="image-placeholder repisa-img">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                        <div class="catalog-overlay">
+                            <button class="btn-view" onclick="openModal('repisa-flotante')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn-customize" onclick="openConfigurator('repisas')">
+                                <i class="fas fa-cog"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="catalog-info">
+                        <h3>Repisas Flotantes</h3>
+                        <p>Elegantes repisas flotantes para maximizar el espacio</p>
+                        <div class="catalog-price">Desde $45.000</div>
+                    </div>
+                </div>
+
+                <!-- Gaveteros -->
+                <div class="catalog-item" data-category="gaveteros">
+                    <div class="catalog-image">
+                        <div class="image-placeholder gavetero-img">
+                            <i class="fas fa-archive"></i>
+                        </div>
+                        <div class="catalog-overlay">
+                            <button class="btn-view" onclick="openModal('gavetero-moderno')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn-customize" onclick="openConfigurator('gaveteros')">
+                                <i class="fas fa-cog"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="catalog-info">
+                        <h3>Gaveteros Modernos</h3>
+                        <p>Gaveteros funcionales con diseño contemporáneo</p>
+                        <div class="catalog-price">Desde $180.000</div>
+                    </div>
+                </div>
+
+                <!-- Closets -->
+                <div class="catalog-item" data-category="closets">
+                    <div class="catalog-image">
+                        <div class="image-placeholder closet-img">
+                            <i class="fas fa-door-open"></i>
+                        </div>
+                        <div class="catalog-overlay">
+                            <button class="btn-view" onclick="openModal('closet-empotrado')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn-customize" onclick="openConfigurator('closets')">
+                                <i class="fas fa-cog"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="catalog-info">
+                        <h3>Closets Empotrados</h3>
+                        <p>Closets personalizados que aprovechan cada centímetro</p>
+                        <div class="catalog-price">Desde $850.000</div>
+                    </div>
+                </div>
+
+                <!-- Centros de Entretenimiento -->
+                <div class="catalog-item" data-category="entretenimiento">
+                    <div class="catalog-image">
+                        <div class="image-placeholder entertainment-img">
+                            <i class="fas fa-tv"></i>
+                        </div>
+                        <div class="catalog-overlay">
+                            <button class="btn-view" onclick="openModal('centro-entretenimiento')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn-customize" onclick="openConfigurator('entretenimiento')">
+                                <i class="fas fa-cog"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="catalog-info">
+                        <h3>Centros de Entretenimiento</h3>
+                        <p>Muebles para TV con estilo y funcionalidad</p>
+                        <div class="catalog-price">Desde $320.000</div>
+                    </div>
+                </div>
+
+                <!-- Cocinas Integrales -->
+                <div class="catalog-item" data-category="cocina">
+                    <div class="catalog-image">
+                        <div class="image-placeholder kitchen-img">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <div class="catalog-overlay">
+                            <button class="btn-view" onclick="openModal('cocina-integral')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn-customize" onclick="openConfigurator('cocina')">
+                                <i class="fas fa-cog"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="catalog-info">
+                        <h3>Cocinas Integrales</h3>
+                        <p>Cocinas completas diseñadas a tu medida</p>
+                        <div class="catalog-price">Desde $1.500.000</div>
+                    </div>
+                </div>
+
+                <!-- Escritorios -->
+                <div class="catalog-item" data-category="escritorios">
+                    <div class="catalog-image">
+                        <div class="image-placeholder desk-img">
+                            <i class="fas fa-desktop"></i>
+                        </div>
+                        <div class="catalog-overlay">
+                            <button class="btn-view" onclick="openModal('escritorio-ejecutivo')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn-customize" onclick="openConfigurator('escritorios')">
+                                <i class="fas fa-cog"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="catalog-info">
+                        <h3>Escritorios Ejecutivos</h3>
+                        <p>Espacios de trabajo diseñados para la productividad</p>
+                        <div class="catalog-price">Desde $280.000</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Configurador 3D -->
+    <section id="configurador" class="configurator">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Configurador 3D</h2>
+                <p class="section-subtitle">Diseña tu mueble personalizado y visualízalo en tiempo real</p>
+            </div>
+            
+            <div class="configurator-container">
+                <div class="configurator-controls">
+                    <div class="control-group">
+                        <h3>Tipo de Mueble</h3>
+                        <select id="furniture-type" class="control-select">
+                            <option value="repisa">Repisa</option>
+                            <option value="gavetero">Gavetero</option>
+                            <option value="escritorio">Escritorio</option>
+                            <option value="mesa">Mesa</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <h3>Dimensiones</h3>
+                        <div class="dimension-controls">
+                            <div class="dimension-item">
+                                <label>Ancho (cm)</label>
+                                <input type="range" id="width" min="50" max="300" value="120" class="dimension-slider">
+                                <span id="width-value">120</span>
+                            </div>
+                            <div class="dimension-item">
+                                <label>Alto (cm)</label>
+                                <input type="range" id="height" min="30" max="250" value="80" class="dimension-slider">
+                                <span id="height-value">80</span>
+                            </div>
+                            <div class="dimension-item">
+                                <label>Profundidad (cm)</label>
+                                <input type="range" id="depth" min="20" max="80" value="40" class="dimension-slider">
+                                <span id="depth-value">40</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <h3>Material</h3>
+                        <div class="material-options">
+                            <button class="material-btn active" data-material="wood">
+                                <i class="fas fa-tree"></i>
+                                Madera
+                            </button>
+                            <button class="material-btn" data-material="metal">
+                                <i class="fas fa-cog"></i>
+                                Metal
+                            </button>
+                            <button class="material-btn" data-material="glass">
+                                <i class="fas fa-gem"></i>
+                                Vidrio
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <h3>Color</h3>
+                        <div class="color-options">
+                            <button class="color-btn active" data-color="#8B4513" style="background: #8B4513;"></button>
+                            <button class="color-btn" data-color="#D2691E" style="background: #D2691E;"></button>
+                            <button class="color-btn" data-color="#654321" style="background: #654321;"></button>
+                            <button class="color-btn" data-color="#2F4F4F" style="background: #2F4F4F;"></button>
+                            <button class="color-btn" data-color="#FFFFFF" style="background: #FFFFFF;"></button>
+                            <button class="color-btn" data-color="#000000" style="background: #000000;"></button>
+                        </div>
+                    </div>
+                    
+                    <div class="price-estimate">
+                        <h3>Precio Estimado</h3>
+                        <div class="price-display">
+                            <span class="price-amount" id="estimated-price">$125.000</span>
+                            <small>*Precio aproximado</small>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary btn-quote">
+                        <i class="fas fa-calculator"></i>
+                        Solicitar Cotización
+                    </button>
+                </div>
+                
+                <div class="configurator-preview">
+                    <div id="three-container" class="three-container">
+                        <div class="loading-3d">
+                            <i class="fas fa-cube fa-spin"></i>
+                            <p>Cargando vista 3D...</p>
+                        </div>
+                    </div>
+                    <div class="preview-controls">
+                        <button class="preview-btn" onclick="resetView()">
+                            <i class="fas fa-undo"></i>
+                            Resetear Vista
+                        </button>
+                        <button class="preview-btn" onclick="takeScreenshot()">
+                            <i class="fas fa-camera"></i>
+                            Capturar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Estadísticas -->
+    <section class="statistics">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Nuestros Números</h2>
+                <p class="section-subtitle">La confianza de nuestros clientes nos respalda</p>
+            </div>
+            
+            <div class="stats-container">
+                <div class="stats-chart">
+                    <canvas id="workChart"></canvas>
+                </div>
+                <div class="stats-info">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-hammer"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" data-target="500">0</h3>
+                            <p>Trabajos Realizados</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-smile"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" data-target="450">0</h3>
+                            <p>Clientes Satisfechos</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-couch"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" data-target="25">0</h3>
+                            <p>Variedades de Muebles</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Galería de Trabajos -->
+    <section id="galeria" class="gallery">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Galería de Trabajos</h2>
+                <p class="section-subtitle">Mira algunos de nuestros proyectos más destacados</p>
+            </div>
+            
+            <div class="gallery-grid">
+                <div class="gallery-item" data-category="closets">
+                    <div class="gallery-image">
+                        <div class="image-placeholder gallery-closet">
+                            <i class="fas fa-door-open"></i>
+                        </div>
+                        <div class="gallery-overlay">
+                            <h4>Closet Moderno</h4>
+                            <p>Cliente: Familia Rodríguez</p>
+                            <button class="btn-gallery-view">Ver Detalles</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="gallery-item" data-category="cocina">
+                    <div class="gallery-image">
+                        <div class="image-placeholder gallery-kitchen">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <div class="gallery-overlay">
+                            <h4>Cocina Integral</h4>
+                            <p>Cliente: Apartamento Downtown</p>
+                            <button class="btn-gallery-view">Ver Detalles</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="gallery-item" data-category="entretenimiento">
+                    <div class="gallery-image">
+                        <div class="image-placeholder gallery-entertainment">
+                            <i class="fas fa-tv"></i>
+                        </div>
+                        <div class="gallery-overlay">
+                            <h4>Centro de Entretenimiento</h4>
+                            <p>Cliente: Casa Familiar</p>
+                            <button class="btn-gallery-view">Ver Detalles</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="gallery-item" data-category="escritorios">
+                    <div class="gallery-image">
+                        <div class="image-placeholder gallery-desk">
+                            <i class="fas fa-desktop"></i>
+                        </div>
+                        <div class="gallery-overlay">
+                            <h4>Oficina Ejecutiva</h4>
+                            <p>Cliente: Empresa TechCorp</p>
+                            <button class="btn-gallery-view">Ver Detalles</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="gallery-item" data-category="gaveteros">
+                    <div class="gallery-image">
+                        <div class="image-placeholder gallery-dresser">
+                            <i class="fas fa-archive"></i>
+                        </div>
+                        <div class="gallery-overlay">
+                            <h4>Gavetero Vintage</h4>
+                            <p>Cliente: Estudio de Diseño</p>
+                            <button class="btn-gallery-view">Ver Detalles</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="gallery-item" data-category="repisas">
+                    <div class="gallery-image">
+                        <div class="image-placeholder gallery-shelves">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                        <div class="gallery-overlay">
+                            <h4>Sistema de Repisas</h4>
+                            <p>Cliente: Librería Moderna</p>
+                            <button class="btn-gallery-view">Ver Detalles</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonios -->
+    <section id="testimonios" class="testimonials">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Lo que Dicen Nuestros Clientes</h2>
+                <p class="section-subtitle">Testimonios reales de clientes satisfechos</p>
+            </div>
+            
+            <div class="testimonials-slider">
+                <div class="testimonial-track">
+                    <div class="testimonial-card active">
+                        <div class="testimonial-content">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <p>"DAJUSCA transformó completamente nuestra cocina. El diseño es espectacular y la calidad de los materiales es excepcional. Superaron todas nuestras expectativas."</p>
+                        </div>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="author-info">
+                                <h4>María González</h4>
+                                <p>Propietaria - Apartamento Zona Rosa</p>
+                                <span class="project-type">Cocina Integral</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="testimonial-card">
+                        <div class="testimonial-content">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <p>"El closet que nos diseñaron aprovecha cada centímetro del espacio. Es funcional, elegante y exactamente lo que necesitábamos. Excelente trabajo y atención al detalle."</p>
+                        </div>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="author-info">
+                                <h4>Carlos Mendoza</h4>
+                                <p>Arquitecto - Casa Campestre</p>
+                                <span class="project-type">Closet Empotrado</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="testimonial-card">
+                        <div class="testimonial-content">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <p>"Profesionalismo de principio a fin. El centro de entretenimiento que crearon es la pieza central de nuestra sala. Calidad premium y diseño innovador."</p>
+                        </div>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="author-info">
+                                <h4>Ana Rodríguez</h4>
+                                <p>Diseñadora - Penthouse</p>
+                                <span class="project-type">Centro de Entretenimiento</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="testimonial-card">
+                        <div class="testimonial-content">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <p>"Los escritorios ejecutivos que nos hicieron para la oficina son perfectos. Combinan funcionalidad y elegancia. Nuestro equipo está encantado con los nuevos espacios de trabajo."</p>
+                        </div>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="author-info">
+                                <h4>Roberto Silva</h4>
+                                <p>CEO - TechStart Solutions</p>
+                                <span class="project-type">Oficina Corporativa</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-navigation">
+                    <button class="testimonial-prev">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="testimonial-dots">
+                        <span class="dot active" data-slide="0"></span>
+                        <span class="dot" data-slide="1"></span>
+                        <span class="dot" data-slide="2"></span>
+                        <span class="dot" data-slide="3"></span>
+                    </div>
+                    <button class="testimonial-next">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contacto -->
+    <section id="contacto" class="contact">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Contáctanos</h2>
+                <p class="section-subtitle">¿Listo para crear el mueble de tus sueños? Hablemos</p>
+            </div>
+            
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3>Información de Contacto</h3>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h4>Ubicación</h4>
+                            <p>Calle 45 #23-67, Bogotá, Colombia</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h4>Teléfono</h4>
+                            <p>+57 (1) 234-5678</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h4>Email</h4>
+                            <p>info@dajusca.com</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <h4>Horarios</h4>
+                            <p>Lun - Vie: 8:00 AM - 6:00 PM<br>Sáb: 9:00 AM - 4:00 PM</p>
+                        </div>
+                    </div>
+                    
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                
+                <form class="contact-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="text" id="nombre" name="nombre" placeholder="Tu nombre completo" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="email" name="email" placeholder="Tu email" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="tel" id="telefono" name="telefono" placeholder="Tu teléfono">
+                        </div>
+                        <div class="form-group">
+                            <select id="tipo-mueble" name="tipo-mueble" required>
+                                <option value="">Tipo de mueble</option>
+                                <option value="repisas">Repisas</option>
+                                <option value="gaveteros">Gaveteros</option>
+                                <option value="closets">Closets</option>
+                                <option value="entretenimiento">Centro de Entretenimiento</option>
+                                <option value="cocina">Cocina Integral</option>
+                                <option value="escritorios">Escritorios</option>
+                                <option value="otro">Otro</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="mensaje" name="mensaje" placeholder="Cuéntanos sobre tu proyecto..." rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i>
+                        Enviar Mensaje
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <h3>DAJUSCA</h3>
+                        <span>Muebles a Medida</span>
+                    </div>
+                    <p>Creamos muebles únicos que transforman espacios y mejoran vidas. Cada pieza es diseñada con pasión y construida con la más alta calidad.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Productos</h4>
+                    <ul>
+                        <li><a href="#catalogo">Repisas</a></li>
+                        <li><a href="#catalogo">Gaveteros</a></li>
+                        <li><a href="#catalogo">Closets</a></li>
+                        <li><a href="#catalogo">Centros de Entretenimiento</a></li>
+                        <li><a href="#catalogo">Cocinas Integrales</a></li>
+                        <li><a href="#catalogo">Escritorios</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Servicios</h4>
+                    <ul>
+                        <li><a href="#configurador">Configurador 3D</a></li>
+                        <li><a href="#">Diseño Personalizado</a></li>
+                        <li><a href="#">Instalación</a></li>
+                        <li><a href="#">Mantenimiento</a></li>
+                        <li><a href="#">Garantía</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contacto</h4>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> Calle 45 #23-67, Bogotá</li>
+                        <li><i class="fas fa-phone"></i> +57 (1) 234-5678</li>
+                        <li><i class="fas fa-envelope"></i> info@dajusca.com</li>
+                        <li><i class="fas fa-clock"></i> Lun-Vie: 8AM-6PM</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 DAJUSCA - Muebles a Medida. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <div id="modal-body">
+                <!-- Contenido del modal se carga dinámicamente -->
+            </div>
+        </div>
+    </div>
+
+    <script src="dajusca-script.js"></script>
+</body>
+</html>
