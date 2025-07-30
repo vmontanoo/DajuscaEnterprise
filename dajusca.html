@@ -750,6 +750,52 @@
         </div>
     </div>
 
+    <!-- Chat Bot -->
+    <div id="chatBot" class="chat-bot">
+        <!-- Botón flotante del chat -->
+        <div class="chat-bot-toggle" id="chatBotToggle">
+            <i class="fas fa-comments"></i>
+            <span class="chat-notification" id="chatNotification">1</span>
+        </div>
+        
+        <!-- Ventana del chat -->
+        <div class="chat-window" id="chatWindow">
+            <div class="chat-header">
+                <div class="chat-header-info">
+                    <div class="chat-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="chat-title">
+                        <h4>Asistente DAJUSCA</h4>
+                        <span class="chat-status">En línea</span>
+                    </div>
+                </div>
+                <button class="chat-close" id="chatClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <!-- Los mensajes se cargan dinámicamente -->
+            </div>
+            
+            <div class="chat-input-container">
+                <div class="chat-quick-actions" id="chatQuickActions">
+                    <button class="quick-action-btn" data-action="catalogo">Ver Catálogo</button>
+                    <button class="quick-action-btn" data-action="precios">Consultar Precios</button>
+                    <button class="quick-action-btn" data-action="contacto">Contacto</button>
+                    <button class="quick-action-btn" data-action="garantia">Garantía</button>
+                </div>
+                <div class="chat-input-wrapper">
+                    <input type="text" id="chatInput" placeholder="Escribe tu pregunta..." maxlength="500">
+                    <button id="chatSend" class="chat-send-btn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="dajusca-script.js"></script>
 </body>
 </html>

@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeContactForm();
     initializeAnimations();
     initializeCounters();
+    initializeChatBot();
     
     console.log('🪑 DAJUSCA - Muebles a Medida cargado exitosamente!');
 });
@@ -1450,3 +1451,272 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 console.log('🪑 DAJUSCA Script loaded successfully!');
+
+// ========================
+// CHAT BOT FUNCTIONALITY
+// ========================
+
+// Base de conocimientos del bot
+const chatBotKnowledge = {
+    saludos: {
+        patterns: ['hola', 'buenos días', 'buenas tardes', 'buenas noches', 'hey', 'saludos'],
+        responses: [
+            '¡Hola! Soy el asistente virtual de DAJUSCA. ¿En qué puedo ayudarte hoy?',
+            '¡Buenos días! Bienvenido a DAJUSCA. ¿Te gustaría conocer nuestros muebles personalizados?',
+            '¡Hola! Gracias por visitar DAJUSCA. ¿Qué tipo de mueble te interesa?'
+        ]
+    },
+    catalogo: {
+        patterns: ['catálogo', 'productos', 'muebles', 'qué venden', 'qué tienen'],
+        responses: [
+            'En DAJUSCA tenemos una amplia variedad de muebles personalizados: repisas, gaveteros, closets, centros de entretenimiento, cocinas integrales y escritorios. ¿Cuál te interesa más?',
+            'Nuestro catálogo incluye muebles para toda la casa: desde repisas decorativas hasta cocinas integrales completas. ¿Qué espacio quieres amueblar?',
+            'Ofrecemos muebles a medida para cada necesidad: dormitorios, salas, cocinas, oficinas y más. ¿En qué área te gustaría que te ayude?'
+        ]
+    },
+    precios: {
+        patterns: ['precio', 'costo', 'cuánto cuesta', 'valor', 'tarifa', 'presupuesto'],
+        responses: [
+            'Los precios varían según el diseño, materiales y dimensiones. Te recomiendo usar nuestro configurador 3D para obtener una cotización personalizada, o puedes contactarnos directamente.',
+            'Cada mueble es único y se cotiza según tus necesidades específicas. ¿Te gustaría que te ayude a configurar un mueble en nuestro configurador 3D?',
+            'Para darte un precio preciso necesito saber más detalles. ¿Qué tipo de mueble te interesa y en qué espacio lo colocarías?'
+        ]
+    },
+    materiales: {
+        patterns: ['material', 'madera', 'tipo de madera', 'calidad', 'durabilidad'],
+        responses: [
+            'Trabajamos con maderas de alta calidad como roble, nogal, cerezo y maderas tropicales. También ofrecemos opciones en MDF y melamina según tu presupuesto.',
+            'Usamos maderas sólidas para proyectos premium y materiales compuestos para opciones más económicas. Todos nuestros materiales son de primera calidad.',
+            'La elección del material depende de tu presupuesto y preferencias. ¿Te gustaría que te explique las diferencias entre nuestras opciones?'
+        ]
+    },
+    tiempo: {
+        patterns: ['tiempo', 'días', 'semanas', 'cuándo', 'entrega', 'fabricación'],
+        responses: [
+            'El tiempo de fabricación varía entre 2-4 semanas dependiendo de la complejidad del proyecto. Los muebles simples pueden estar listos en 10-15 días.',
+            'Para proyectos personalizados calculamos 3-4 semanas desde la aprobación del diseño hasta la entrega e instalación.',
+            '¿Tienes alguna fecha específica en mente? Podemos ajustar nuestros tiempos según tus necesidades.'
+        ]
+    },
+    garantia: {
+        patterns: ['garantía', 'garantizado', 'devolución', 'problemas', 'defectos'],
+        responses: [
+            'Todos nuestros muebles tienen garantía de 2 años contra defectos de fabricación. También ofrecemos servicio post-venta y mantenimiento.',
+            'Garantizamos la calidad de nuestros muebles por 2 años. Si hay algún problema, lo solucionamos sin costo adicional.',
+            'Nuestra garantía cubre defectos de fabricación, materiales y acabados. ¿Te gustaría conocer más detalles sobre nuestro servicio post-venta?'
+        ]
+    },
+    contacto: {
+        patterns: ['contacto', 'teléfono', 'email', 'dirección', 'ubicación', 'dónde'],
+        responses: [
+            'Puedes contactarnos al +57 (1) 234-5678, por email a info@dajusca.com, o visitarnos en Calle 45 #23-67, Bogotá. Horario: Lun-Vie 8AM-6PM.',
+            'Estamos ubicados en Calle 45 #23-67, Bogotá. Teléfono: +57 (1) 234-5678. También puedes escribirnos a info@dajusca.com.',
+            'Nuestros datos de contacto están en la sección de contacto de la página. ¿Te gustaría que te ayude a programar una cita?'
+        ]
+    },
+    configurador: {
+        patterns: ['configurador', '3d', 'diseñar', 'personalizar', 'medidas'],
+        responses: [
+            '¡Perfecto! Nuestro configurador 3D te permite diseñar tu mueble ideal. Puedes ajustar dimensiones, materiales y colores en tiempo real.',
+            'El configurador 3D está en la sección "Configurador" de nuestra página. Te permite ver tu mueble desde todos los ángulos antes de comprarlo.',
+            'Con nuestro configurador 3D puedes experimentar con diferentes diseños y obtener una cotización instantánea. ¿Te gustaría que te guíe?'
+        ]
+    },
+    instalacion: {
+        patterns: ['instalación', 'montaje', 'armar', 'colocar', 'servicio'],
+        responses: [
+            'Sí, incluimos instalación profesional en todos nuestros muebles. Nuestro equipo se encarga del montaje completo en tu hogar.',
+            'La instalación está incluida en el precio. Nuestros técnicos especializados se encargan de todo el proceso de montaje.',
+            'Ofrecemos servicio de instalación completo. Nos encargamos de transportar, montar y ajustar todo perfectamente en tu espacio.'
+        ]
+    },
+    agradecimiento: {
+        patterns: ['gracias', 'thank you', 'perfecto', 'excelente', 'ok'],
+        responses: [
+            '¡De nada! Estoy aquí para ayudarte. Si tienes más preguntas, no dudes en preguntarme.',
+            '¡Un placer ayudarte! Recuerda que puedes usar nuestro configurador 3D o contactarnos directamente para más información.',
+            '¡Perfecto! Si necesitas más detalles sobre algún mueble o servicio, aquí estaré para ayudarte.'
+        ]
+    }
+};
+
+// Función para encontrar la mejor respuesta
+function findBestResponse(userMessage) {
+    const message = userMessage.toLowerCase();
+    
+    for (const category in chatBotKnowledge) {
+        const patterns = chatBotKnowledge[category].patterns;
+        for (const pattern of patterns) {
+            if (message.includes(pattern)) {
+                const responses = chatBotKnowledge[category].responses;
+                return responses[Math.floor(Math.random() * responses.length)];
+            }
+        }
+    }
+    
+    // Respuesta por defecto
+    return 'Entiendo tu pregunta. Te recomiendo revisar nuestro catálogo o usar el configurador 3D para obtener más información específica. También puedes contactarnos directamente para una atención personalizada.';
+}
+
+// Función para mostrar indicador de escritura
+function showTypingIndicator() {
+    const messagesContainer = document.getElementById('chatMessages');
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'chat-message bot typing-message';
+    typingDiv.innerHTML = `
+        <div class="chat-message-avatar">
+            <i class="fas fa-robot"></i>
+        </div>
+        <div class="typing-indicator">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+        </div>
+    `;
+    messagesContainer.appendChild(typingDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    return typingDiv;
+}
+
+// Función para agregar mensaje al chat
+function addMessage(content, isUser = false) {
+    const messagesContainer = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `chat-message ${isUser ? 'user' : 'bot'}`;
+    
+    const now = new Date();
+    const timeString = now.toLocaleTimeString('es-ES', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+    });
+    
+    messageDiv.innerHTML = `
+        <div class="chat-message-avatar">
+            <i class="${isUser ? 'fas fa-user' : 'fas fa-robot'}"></i>
+        </div>
+        <div class="chat-message-content">
+            ${content}
+            <div class="chat-message-time">${timeString}</div>
+        </div>
+    `;
+    
+    messagesContainer.appendChild(messageDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+// Función para procesar mensaje del usuario
+function processUserMessage(message) {
+    // Agregar mensaje del usuario
+    addMessage(message, true);
+    
+    // Mostrar indicador de escritura
+    const typingIndicator = showTypingIndicator();
+    
+    // Simular tiempo de respuesta
+    setTimeout(() => {
+        // Remover indicador de escritura
+        typingIndicator.remove();
+        
+        // Obtener respuesta del bot
+        const botResponse = findBestResponse(message);
+        addMessage(botResponse, false);
+    }, 1000 + Math.random() * 2000); // Entre 1-3 segundos
+}
+
+// Función para manejar acciones rápidas
+function handleQuickAction(action) {
+    let message = '';
+    switch(action) {
+        case 'catalogo':
+            message = 'Quiero ver el catálogo de muebles';
+            break;
+        case 'precios':
+            message = '¿Cuáles son los precios de los muebles?';
+            break;
+        case 'contacto':
+            message = 'Necesito información de contacto';
+            break;
+        case 'garantia':
+            message = '¿Qué garantía ofrecen?';
+            break;
+    }
+    
+    if (message) {
+        document.getElementById('chatInput').value = message;
+        sendMessage();
+    }
+}
+
+// Función para enviar mensaje
+function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
+    
+    if (message) {
+        processUserMessage(message);
+        input.value = '';
+    }
+}
+
+// Función para inicializar el chat bot
+function initializeChatBot() {
+    const chatToggle = document.getElementById('chatBotToggle');
+    const chatWindow = document.getElementById('chatWindow');
+    const chatClose = document.getElementById('chatClose');
+    const chatInput = document.getElementById('chatInput');
+    const chatSend = document.getElementById('chatSend');
+    const quickActions = document.querySelectorAll('.quick-action-btn');
+    const chatNotification = document.getElementById('chatNotification');
+    
+    // Mostrar mensaje de bienvenida después de 3 segundos
+    setTimeout(() => {
+        if (!chatWindow.classList.contains('active')) {
+            chatNotification.style.display = 'flex';
+        }
+    }, 3000);
+    
+    // Toggle del chat
+    chatToggle.addEventListener('click', () => {
+        chatWindow.classList.toggle('active');
+        chatNotification.style.display = 'none';
+        
+        // Si es la primera vez que se abre, mostrar mensaje de bienvenida
+        if (chatWindow.classList.contains('active') && document.getElementById('chatMessages').children.length === 0) {
+            setTimeout(() => {
+                addMessage('¡Hola! Soy el asistente virtual de DAJUSCA. ¿En qué puedo ayudarte hoy? Puedes preguntarme sobre nuestros muebles, precios, materiales o usar los botones de abajo para accesos rápidos.', false);
+            }, 500);
+        }
+    });
+    
+    // Cerrar chat
+    chatClose.addEventListener('click', () => {
+        chatWindow.classList.remove('active');
+    });
+    
+    // Enviar mensaje con Enter
+    chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+    
+    // Enviar mensaje con botón
+    chatSend.addEventListener('click', sendMessage);
+    
+    // Acciones rápidas
+    quickActions.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const action = btn.getAttribute('data-action');
+            handleQuickAction(action);
+        });
+    });
+    
+    // Cerrar chat al hacer clic fuera
+    document.addEventListener('click', (e) => {
+        if (!chatWindow.contains(e.target) && !chatToggle.contains(e.target)) {
+            chatWindow.classList.remove('active');
+        }
+    });
+}
+
+console.log('🤖 Chat Bot DAJUSCA inicializado!');
