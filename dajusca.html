@@ -750,6 +750,73 @@
         </div>
     </div>
 
+    <!-- Chatbot -->
+    <div id="chatbot-container" class="chatbot-container">
+        <!-- Botón flotante del chatbot -->
+        <div id="chatbot-toggle" class="chatbot-toggle">
+            <i class="fas fa-comments"></i>
+            <span class="chatbot-badge" id="chatbot-badge">1</span>
+        </div>
+
+        <!-- Ventana del chatbot -->
+        <div id="chatbot-window" class="chatbot-window">
+            <div class="chatbot-header">
+                <div class="chatbot-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="chatbot-info">
+                    <h4>Asistente DAJUSCA</h4>
+                    <span class="chatbot-status">En línea</span>
+                </div>
+                <button id="chatbot-close" class="chatbot-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div id="chatbot-messages" class="chatbot-messages">
+                <div class="message bot-message">
+                    <div class="message-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        <p>¡Hola! Soy el asistente virtual de DAJUSCA. ¿En qué puedo ayudarte hoy?</p>
+                        <span class="message-time">Ahora</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chatbot-quick-actions">
+                <button class="quick-action-btn" data-action="productos">
+                    <i class="fas fa-couch"></i>
+                    Productos
+                </button>
+                <button class="quick-action-btn" data-action="precios">
+                    <i class="fas fa-tag"></i>
+                    Precios
+                </button>
+                <button class="quick-action-btn" data-action="tiempos">
+                    <i class="fas fa-clock"></i>
+                    Tiempos
+                </button>
+                <button class="quick-action-btn" data-action="contacto">
+                    <i class="fas fa-phone"></i>
+                    Contacto
+                </button>
+            </div>
+
+            <div class="chatbot-input-container">
+                <input type="text" id="chatbot-input" placeholder="Escribe tu pregunta aquí..." maxlength="500">
+                <button id="chatbot-send" class="chatbot-send">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+
+            <div class="chatbot-footer">
+                <small>Powered by DAJUSCA IA</small>
+            </div>
+        </div>
+    </div>
+
     <script src="dajusca-script.js"></script>
 </body>
 </html>

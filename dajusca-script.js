@@ -1436,8 +1436,420 @@ if ('IntersectionObserver' in window) {
     });
 }
 
+// ===== CHATBOT FUNCTIONALITY =====
+class DajuscaChatbot {
+    constructor() {
+        this.isOpen = false;
+        this.messages = [];
+        this.faqData = {
+            productos: {
+                keywords: ['productos', 'muebles', 'catálogo', 'repisas', 'gaveteros', 'closets', 'cocinas', 'escritorios', 'qué hacen', 'qué venden'],
+                response: `¡Excelente pregunta! En DAJUSCA nos especializamos en:
+
+🪑 **Repisas** - Flotantes y modulares
+📚 **Gaveteros** - Para dormitorios y espacios
+👔 **Closets** - Personalizados a medida
+📺 **Centros de Entretenimiento** - Modernos y funcionales
+🍳 **Cocinas Integrales** - Diseño completo
+💻 **Escritorios** - Para oficinas y estudios
+
+Todos nuestros muebles son **hechos a medida** con materiales de alta calidad. ¿Te interesa algún producto en particular?`
+            },
+            precios: {
+                keywords: ['precio', 'costo', 'cuánto cuesta', 'cotización', 'presupuesto', 'económico', 'barato', 'valor'],
+                response: `💰 **Precios DAJUSCA**
+
+Nuestros precios varían según el diseño y materiales:
+
+📏 **Factores que influyen:**
+• Dimensiones del mueble
+• Tipo de madera o material
+• Complejidad del diseño
+• Herrajes y accesorios
+
+💡 **Rangos aproximados:**
+• Repisas: $150,000 - $500,000
+• Gaveteros: $400,000 - $1,200,000
+• Closets: $1,500,000 - $5,000,000
+• Cocinas integrales: $3,000,000 - $15,000,000
+
+📞 **¡Contáctanos para una cotización personalizada!**
+Tel: +57 (1) 234-5678`
+            },
+            tiempos: {
+                keywords: ['tiempo', 'entrega', 'cuánto demora', 'fabricación', 'instalación', 'cuando'],
+                response: `⏰ **Tiempos de Entrega DAJUSCA**
+
+📅 **Proceso completo:**
+
+1️⃣ **Diseño y medición** → 3-5 días
+2️⃣ **Fabricación** → 15-25 días laborales
+3️⃣ **Instalación** → 1-3 días
+
+🏃‍♂️ **Tiempos totales estimados:**
+• Repisas y gaveteros: 2-3 semanas
+• Closets: 3-4 semanas  
+• Cocinas integrales: 4-6 semanas
+
+⚡ **Servicio express disponible** con sobrecosto del 30%
+
+*Los tiempos pueden variar según la complejidad del proyecto y temporada alta.*`
+            },
+            contacto: {
+                keywords: ['contacto', 'teléfono', 'dirección', 'ubicación', 'llamar', 'visitar', 'oficina', 'whatsapp'],
+                response: `📞 **Contacta con DAJUSCA**
+
+🏢 **Dirección:**
+Calle 45 #23-67, Bogotá, Colombia
+
+📱 **Teléfonos:**
+• Fijo: +57 (1) 234-5678
+• WhatsApp: +57 300 123 4567
+
+📧 **Email:**
+info@dajusca.com
+
+🕒 **Horarios:**
+• Lunes a Viernes: 8:00 AM - 6:00 PM
+• Sábados: 9:00 AM - 4:00 PM
+• Domingos: Cerrado
+
+🌐 **Redes Sociales:**
+• Instagram: @dajusca_muebles
+• Facebook: DAJUSCA Muebles a Medida
+
+¡Estamos aquí para ayudarte a crear el mueble perfecto! 🪑✨`
+            },
+            garantia: {
+                keywords: ['garantía', 'garantia', 'calidad', 'problemas', 'reparación', 'defectos'],
+                response: `🛡️ **Garantía DAJUSCA**
+
+✅ **Cobertura completa:**
+• **Estructura:** 2 años
+• **Herrajes:** 1 año
+• **Acabados:** 6 meses
+• **Instalación:** 30 días
+
+🔧 **Incluye:**
+• Defectos de fabricación
+• Problemas de instalación
+• Ajustes menores
+• Mantenimiento básico
+
+📋 **Proceso de garantía:**
+1. Reportar el problema
+2. Inspección técnica (48-72h)
+3. Reparación o reemplazo
+4. Seguimiento post-servicio
+
+💎 **Compromiso de calidad:** Usamos materiales premium y técnicas artesanales para garantizar la durabilidad de cada mueble.`
+            },
+            materiales: {
+                keywords: ['materiales', 'madera', 'melamina', 'calidad', 'tipos', 'acabados'],
+                response: `🌳 **Materiales DAJUSCA**
+
+🪵 **Maderas naturales:**
+• Roble • Cedro • Pino • Nogal
+
+🎨 **Melaminas premium:**
+• Texturas madera • Colores sólidos • Acabados mate/brillante
+
+✨ **Acabados especiales:**
+• Lacas • Barnices • Tintes • Efectos envejecidos
+
+🔩 **Herrajes de calidad:**
+• Bisagras de amortiguación
+• Rieles telescópicos
+• Manijas premium
+• Sistemas de apertura soft-close
+
+💎 **Calidad garantizada:** Trabajamos solo con proveedores certificados y materiales de primera calidad.`
+            },
+            proceso: {
+                keywords: ['proceso', 'cómo', 'procedimiento', 'pasos', 'método', 'diseño'],
+                response: `🔄 **Proceso DAJUSCA**
+
+1️⃣ **Consulta inicial** (Gratis)
+   • Reunión presencial o virtual
+   • Análisis de necesidades
+   • Ideas y referencias
+
+2️⃣ **Diseño personalizado**
+   • Medición del espacio
+   • Render 3D del proyecto
+   • Cotización detallada
+
+3️⃣ **Aprobación y fabricación**
+   • Contrato y anticipo
+   • Fabricación artesanal
+   • Control de calidad
+
+4️⃣ **Entrega e instalación**
+   • Transporte especializado
+   • Instalación profesional
+   • Limpieza del área
+
+5️⃣ **Seguimiento post-venta**
+   • Revisión a los 30 días
+   • Soporte técnico
+   • Garantía activa
+
+¡Tu satisfacción es nuestra prioridad! 🎯`
+            }
+        };
+        
+        this.initChatbot();
+    }
+
+    initChatbot() {
+        this.chatbotToggle = document.getElementById('chatbot-toggle');
+        this.chatbotWindow = document.getElementById('chatbot-window');
+        this.chatbotClose = document.getElementById('chatbot-close');
+        this.chatbotInput = document.getElementById('chatbot-input');
+        this.chatbotSend = document.getElementById('chatbot-send');
+        this.chatbotMessages = document.getElementById('chatbot-messages');
+        this.chatbotBadge = document.getElementById('chatbot-badge');
+
+        this.bindEvents();
+        this.initQuickActions();
+        
+        // Hide badge after 10 seconds
+        setTimeout(() => {
+            if (this.chatbotBadge) {
+                this.chatbotBadge.style.display = 'none';
+            }
+        }, 10000);
+    }
+
+    bindEvents() {
+        if (this.chatbotToggle) {
+            this.chatbotToggle.addEventListener('click', () => this.toggleChatbot());
+        }
+
+        if (this.chatbotClose) {
+            this.chatbotClose.addEventListener('click', () => this.closeChatbot());
+        }
+
+        if (this.chatbotSend) {
+            this.chatbotSend.addEventListener('click', () => this.sendMessage());
+        }
+
+        if (this.chatbotInput) {
+            this.chatbotInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    this.sendMessage();
+                }
+            });
+        }
+
+        // Close chatbot when clicking outside
+        document.addEventListener('click', (e) => {
+            if (this.isOpen && !this.chatbotWindow.contains(e.target) && !this.chatbotToggle.contains(e.target)) {
+                this.closeChatbot();
+            }
+        });
+    }
+
+    initQuickActions() {
+        const quickActionBtns = document.querySelectorAll('.quick-action-btn');
+        quickActionBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const action = btn.getAttribute('data-action');
+                this.handleQuickAction(action);
+            });
+        });
+    }
+
+    toggleChatbot() {
+        if (this.isOpen) {
+            this.closeChatbot();
+        } else {
+            this.openChatbot();
+        }
+    }
+
+    openChatbot() {
+        this.isOpen = true;
+        this.chatbotWindow.classList.add('active');
+        this.chatbotInput.focus();
+        
+        if (this.chatbotBadge) {
+            this.chatbotBadge.style.display = 'none';
+        }
+    }
+
+    closeChatbot() {
+        this.isOpen = false;
+        this.chatbotWindow.classList.remove('active');
+    }
+
+    handleQuickAction(action) {
+        const responses = {
+            productos: '¿Qué productos ofrecen?',
+            precios: '¿Cuáles son sus precios?',
+            tiempos: '¿Cuánto tiempo toman en entregar?',
+            contacto: '¿Cómo puedo contactarlos?'
+        };
+
+        if (responses[action]) {
+            this.addUserMessage(responses[action]);
+            setTimeout(() => {
+                this.processMessage(responses[action]);
+            }, 500);
+        }
+    }
+
+    sendMessage() {
+        const message = this.chatbotInput.value.trim();
+        if (message) {
+            this.addUserMessage(message);
+            this.chatbotInput.value = '';
+            this.chatbotSend.disabled = true;
+            
+            setTimeout(() => {
+                this.processMessage(message);
+                this.chatbotSend.disabled = false;
+            }, 1000);
+        }
+    }
+
+    addUserMessage(message) {
+        const messageElement = this.createMessageElement(message, 'user');
+        this.chatbotMessages.appendChild(messageElement);
+        this.scrollToBottom();
+    }
+
+    addBotMessage(message) {
+        this.showTypingIndicator();
+        
+        setTimeout(() => {
+            this.hideTypingIndicator();
+            const messageElement = this.createMessageElement(message, 'bot');
+            this.chatbotMessages.appendChild(messageElement);
+            this.scrollToBottom();
+        }, 1500);
+    }
+
+    createMessageElement(message, type) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${type}-message`;
+        
+        const avatar = document.createElement('div');
+        avatar.className = 'message-avatar';
+        avatar.innerHTML = type === 'bot' ? '<i class="fas fa-robot"></i>' : '<i class="fas fa-user"></i>';
+        
+        const content = document.createElement('div');
+        content.className = 'message-content';
+        content.innerHTML = `<p>${this.formatMessage(message)}</p><span class="message-time">${this.getCurrentTime()}</span>`;
+        
+        messageDiv.appendChild(avatar);
+        messageDiv.appendChild(content);
+        
+        return messageDiv;
+    }
+
+    formatMessage(message) {
+        // Convert markdown-like formatting to HTML
+        return message
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/• /g, '• ')
+            .replace(/\n/g, '<br>');
+    }
+
+    getCurrentTime() {
+        const now = new Date();
+        return now.toLocaleTimeString('es-ES', { 
+            hour: '2-digit', 
+            minute: '2-digit' 
+        });
+    }
+
+    showTypingIndicator() {
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'message bot-message typing-indicator';
+        typingDiv.innerHTML = `
+            <div class="message-avatar">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="message-content">
+                <div class="typing-dots">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+        `;
+        typingDiv.id = 'typing-indicator';
+        this.chatbotMessages.appendChild(typingDiv);
+        this.scrollToBottom();
+    }
+
+    hideTypingIndicator() {
+        const typingIndicator = document.getElementById('typing-indicator');
+        if (typingIndicator) {
+            typingIndicator.remove();
+        }
+    }
+
+    processMessage(message) {
+        const lowerMessage = message.toLowerCase();
+        
+        // Find matching FAQ
+        for (const [category, faq] of Object.entries(this.faqData)) {
+            if (faq.keywords.some(keyword => lowerMessage.includes(keyword))) {
+                this.addBotMessage(faq.response);
+                return;
+            }
+        }
+        
+        // Default response for unmatched queries
+        const defaultResponses = [
+            `¡Gracias por tu pregunta! 😊
+
+Para ayudarte mejor, puedes preguntarme sobre:
+
+🪑 **Productos** - Nuestro catálogo completo
+💰 **Precios** - Cotizaciones y presupuestos  
+⏰ **Tiempos** - Plazos de entrega
+📞 **Contacto** - Información de ubicación y teléfonos
+🛡️ **Garantía** - Cobertura y políticas
+🌳 **Materiales** - Tipos de madera y acabados
+
+O usa los botones de acceso rápido para consultas frecuentes. ¿En qué más puedo ayudarte?`,
+
+            `¡Hola! Soy el asistente virtual de DAJUSCA 🤖
+
+Estoy aquí para ayudarte con información sobre nuestros muebles a medida. Puedes preguntarme sobre productos, precios, tiempos de entrega, garantías y mucho más.
+
+¿Te gustaría conocer algún producto específico o tienes alguna pregunta sobre nuestros servicios?`,
+
+            `¡Excelente pregunta! 👍
+
+En DAJUSCA estamos especializados en crear muebles únicos para tu hogar. Si necesitas información específica sobre algún tema, no dudes en preguntarme.
+
+También puedes contactarnos directamente:
+📞 Tel: +57 (1) 234-5678
+📧 Email: info@dajusca.com
+
+¿Hay algo específico en lo que pueda ayudarte hoy?`
+        ];
+        
+        const randomResponse = defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+        this.addBotMessage(randomResponse);
+    }
+
+    scrollToBottom() {
+        setTimeout(() => {
+            this.chatbotMessages.scrollTop = this.chatbotMessages.scrollHeight;
+        }, 100);
+    }
+}
+
 // Actualizar todos los TODOs como completados
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize chatbot
+    const chatbot = new DajuscaChatbot();
+    
     // Marcar todas las funcionalidades como implementadas
     console.log('✅ Catálogo interactivo con filtros - Implementado');
     console.log('✅ Configurador 3D de muebles - Implementado');
@@ -1447,6 +1859,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('✅ Formulario de contacto funcional - Implementado');
     console.log('✅ Navegación responsive - Implementado');
     console.log('✅ Animaciones y efectos - Implementado');
+    console.log('✅ Chatbot inteligente con FAQ - Implementado');
 });
 
 console.log('🪑 DAJUSCA Script loaded successfully!');
