@@ -300,6 +300,45 @@ PRINT '📈 Vistas creadas: Vista_Estadisticas, Vista_Galeria';
 PRINT '⚙️ Procedimientos creados: SP_EstadisticasPorCategoria, SP_CrearCotizacion';
 PRINT '🎯 Datos de ejemplo insertados correctamente';
 
+-- ===================================
+-- TABLA PARA ÓRDENES PERSONALIZADAS
+-- ===================================
+
+-- Tabla para almacenar las órdenes personalizadas de clientes
+CREATE TABLE custom_orders (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    client_name NVARCHAR(100) NOT NULL,
+    client_phone NVARCHAR(20) NOT NULL,
+    client_email NVARCHAR(100) NOT NULL,
+    furniture_type NVARCHAR(50),
+    project_description NTEXT NOT NULL,
+    budget NVARCHAR(50),
+    image_filename NVARCHAR(255),
+    submission_date DATETIME NOT NULL DEFAULT GETDATE(),
+    status NVARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'in_progress', 'completed', 'cancelled')),
+    notes NTEXT,
+    created_at DATETIME DEFAULT GETDATE(),
+    updated_at DATETIME DEFAULT GETDATE()
+);
+
+-- Índices para la tabla de órdenes
+CREATE INDEX IX_custom_orders_email ON custom_orders(client_email);
+CREATE INDEX IX_custom_orders_date ON custom_orders(submission_date);
+CREATE INDEX IX_custom_orders_status ON custom_orders(status);
+
+-- Trigger para actualizar updated_at
+CREATE TRIGGER TR_custom_orders_update
+ON custom_orders
+AFTER UPDATE
+AS
+BEGIN
+    UPDATE custom_orders 
+    SET updated_at = GETDATE()
+    WHERE id IN (SELECT id FROM inserted);
+END;
+
+PRINT '📦 Tabla custom_orders creada exitosamente';
+
 -- Verificar la creación
 SELECT 'Muebles' as Tabla, COUNT(*) as Registros FROM Muebles
 UNION ALL
@@ -311,4 +350,6 @@ SELECT 'Testimonios', COUNT(*) FROM Testimonios
 UNION ALL
 SELECT 'Cotizaciones', COUNT(*) FROM Cotizaciones
 UNION ALL
-SELECT 'Contactos', COUNT(*) FROM Contactos;
+SELECT 'Contactos', COUNT(*) FROM Contactos
+UNION ALL
+SELECT 'Órdenes Personalizadas', COUNT(*) FROM custom_orders;

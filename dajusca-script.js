@@ -1860,6 +1860,208 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('✅ Navegación responsive - Implementado');
     console.log('✅ Animaciones y efectos - Implementado');
     console.log('✅ Chatbot inteligente con FAQ - Implementado');
+    console.log('✅ Sistema de órdenes personalizadas - Implementado');
+});
+
+// ========================
+// SISTEMA DE ÓRDENES PERSONALIZADAS
+// ========================
+
+// Manejo del formulario de órdenes
+function initOrderSystem() {
+    const orderForm = document.getElementById('orderForm');
+    const fileInput = document.getElementById('referenceImage');
+    const fileDisplay = document.querySelector('.file-input-display');
+    const fileNameSpan = document.querySelector('.file-name');
+    const formStatus = document.getElementById('formStatus');
+
+    if (!orderForm) return;
+
+    // Manejo de drag and drop para archivos
+    function setupFileUpload() {
+        fileDisplay.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileDisplay.classList.add('dragover');
+        });
+
+        fileDisplay.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            fileDisplay.classList.remove('dragover');
+        });
+
+        fileDisplay.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileDisplay.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileSelection(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileSelection(e.target.files[0]);
+            }
+        });
+    }
+
+    // Manejar selección de archivo
+    function handleFileSelection(file) {
+        if (!file.type.includes('png')) {
+            showStatus('error', 'Por favor, selecciona solo archivos PNG.');
+            return;
+        }
+
+        if (file.size > 10 * 1024 * 1024) { // 10MB
+            showStatus('error', 'El archivo es muy grande. Máximo 10MB.');
+            return;
+        }
+
+        fileNameSpan.textContent = file.name;
+        fileDisplay.classList.add('has-file');
+        hideStatus();
+    }
+
+    // Mostrar status del formulario
+    function showStatus(type, message) {
+        formStatus.className = `form-status ${type}`;
+        formStatus.textContent = message;
+    }
+
+    function hideStatus() {
+        formStatus.className = 'form-status';
+        formStatus.textContent = '';
+    }
+
+    // Validación del formulario
+    function validateForm() {
+        const requiredFields = orderForm.querySelectorAll('[required]');
+        let isValid = true;
+        let firstInvalidField = null;
+
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                field.style.borderColor = '#ef4444';
+                if (!firstInvalidField) firstInvalidField = field;
+                isValid = false;
+            } else {
+                field.style.borderColor = '#e1e5e9';
+            }
+        });
+
+        // Validar email
+        const emailField = document.getElementById('clientEmail');
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (emailField.value && !emailRegex.test(emailField.value)) {
+            emailField.style.borderColor = '#ef4444';
+            if (!firstInvalidField) firstInvalidField = emailField;
+            isValid = false;
+        }
+
+        // Validar archivo
+        if (!fileInput.files.length) {
+            showStatus('error', 'Por favor, selecciona una imagen de referencia.');
+            isValid = false;
+        }
+
+        if (!isValid && firstInvalidField) {
+            firstInvalidField.focus();
+            firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        return isValid;
+    }
+
+    // Envío del formulario
+    orderForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        if (!validateForm()) {
+            return;
+        }
+
+        const submitButton = orderForm.querySelector('.btn-submit');
+        const originalText = submitButton.innerHTML;
+        
+        try {
+            // Mostrar estado de carga
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+            showStatus('loading', 'Enviando tu solicitud...');
+
+            // Crear FormData
+            const formData = new FormData();
+            
+            // Obtener todos los datos del formulario
+            const formFields = {
+                clientName: document.getElementById('clientName').value,
+                clientPhone: document.getElementById('clientPhone').value,
+                clientEmail: document.getElementById('clientEmail').value,
+                furnitureType: document.getElementById('furnitureType').value,
+                projectDescription: document.getElementById('projectDescription').value,
+                budget: document.getElementById('budget').value
+            };
+
+            // Agregar campos al FormData
+            Object.keys(formFields).forEach(key => {
+                formData.append(key, formFields[key]);
+            });
+
+            // Agregar archivo
+            formData.append('referenceImage', fileInput.files[0]);
+
+            // Enviar al servidor
+            const response = await fetch('/api/submit-order', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                showStatus('success', '¡Solicitud enviada exitosamente! Te contactaremos pronto.');
+                orderForm.reset();
+                fileDisplay.classList.remove('has-file');
+                fileNameSpan.textContent = '';
+                
+                // Scroll al status después de un momento
+                setTimeout(() => {
+                    formStatus.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 500);
+            } else {
+                throw new Error(result.message || 'Error al enviar la solicitud');
+            }
+
+        } catch (error) {
+            console.error('Error:', error);
+            showStatus('error', 'Hubo un error al enviar tu solicitud. Por favor, inténtalo nuevamente.');
+        } finally {
+            // Restaurar botón
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalText;
+        }
+    });
+
+    // Configurar upload de archivos
+    setupFileUpload();
+
+    // Limpiar estilos de validación en tiempo real
+    const inputs = orderForm.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+        input.addEventListener('input', () => {
+            if (input.hasAttribute('required') && input.value.trim()) {
+                input.style.borderColor = '#e1e5e9';
+            }
+        });
+    });
+
+    console.log('✅ Sistema de órdenes personalizadas inicializado');
+}
+
+// Inicializar cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', () => {
+    initOrderSystem();
 });
 
 console.log('🪑 DAJUSCA Script loaded successfully!');
