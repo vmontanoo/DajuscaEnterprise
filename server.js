@@ -58,7 +58,19 @@ if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// Configuración de almacenamiento
+// Crear directorios para catálogo y galería
+const catalogUploadDir = 'uploads/catalog';
+const galleryUploadDir = 'uploads/gallery';
+
+if (!fs.existsSync(catalogUploadDir)) {
+    fs.mkdirSync(catalogUploadDir, { recursive: true });
+}
+
+if (!fs.existsSync(galleryUploadDir)) {
+    fs.mkdirSync(galleryUploadDir, { recursive: true });
+}
+
+// Configuración de almacenamiento para órdenes
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, uploadDir);
@@ -70,7 +82,39 @@ const storage = multer.diskStorage({
     }
 });
 
-// Filtro para solo archivos PNG
+// Configuración de almacenamiento para catálogo
+const catalogStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, catalogUploadDir);
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, 'catalog-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
+
+// Configuración de almacenamiento para galería
+const galleryStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, galleryUploadDir);
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, 'gallery-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
+
+// Filtro para archivos de imagen (PNG, JPG, JPEG, WebP)
+const imageFilter = (req, file, cb) => {
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
+    if (allowedTypes.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(new Error('Solo se permiten archivos de imagen (PNG, JPG, JPEG, WebP)'), false);
+    }
+};
+
+// Filtro para solo archivos PNG (para órdenes)
 const fileFilter = (req, file, cb) => {
     if (file.mimetype === 'image/png') {
         cb(null, true);
@@ -79,13 +123,31 @@ const fileFilter = (req, file, cb) => {
     }
 };
 
-// Configurar multer
+// Configurar multer para órdenes
 const upload = multer({
     storage: storage,
     limits: {
         fileSize: parseInt(process.env.MAX_FILE_SIZE) || 10 * 1024 * 1024 // 10MB por defecto
     },
     fileFilter: fileFilter
+});
+
+// Configurar multer para catálogo
+const catalogUpload = multer({
+    storage: catalogStorage,
+    limits: {
+        fileSize: 5 * 1024 * 1024 // 5MB para imágenes de catálogo
+    },
+    fileFilter: imageFilter
+});
+
+// Configurar multer para galería
+const galleryUpload = multer({
+    storage: galleryStorage,
+    limits: {
+        fileSize: 5 * 1024 * 1024 // 5MB para imágenes de galería
+    },
+    fileFilter: imageFilter
 });
 
 // ========================
@@ -443,12 +505,6 @@ app.use((err, req, res, next) => {
     });
 });
 
-// Iniciar servidor
-app.listen(PORT, () => {
-    console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
-    console.log(`📊 Base de datos: ${dbConfig.database}`);
-});
-
 // ========================
 // ENDPOINT PARA ÓRDENES PERSONALIZADAS
 // ========================
@@ -608,6 +664,232 @@ app.get('/api/orders', async (req, res) => {
             message: 'Error al obtener órdenes'
         });
     }
+});
+
+// ========================
+// API ENDPOINTS PARA IMÁGENES
+// ========================
+
+// Endpoint para subir imagen de catálogo
+app.post('/api/upload-catalog-image', catalogUpload.single('image'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: 'No se ha proporcionado ninguna imagen'
+            });
+        }
+
+        const { productId, productName, productCategory } = req.body;
+        
+        const imageData = {
+            filename: req.file.filename,
+            originalName: req.file.originalname,
+            path: req.file.path,
+            size: req.file.size,
+            productId: productId || null,
+            productName: productName || 'Sin nombre',
+            productCategory: productCategory || 'general'
+        };
+
+        res.json({
+            success: true,
+            message: 'Imagen de catálogo subida exitosamente',
+            image: {
+                filename: req.file.filename,
+                url: `/uploads/catalog/${req.file.filename}`,
+                productId: productId,
+                productName: productName,
+                productCategory: productCategory
+            }
+        });
+
+    } catch (error) {
+        console.error('❌ Error subiendo imagen de catálogo:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al subir la imagen del catálogo'
+        });
+    }
+});
+
+// Endpoint para subir imagen de galería
+app.post('/api/upload-gallery-image', galleryUpload.single('image'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: 'No se ha proporcionado ninguna imagen'
+            });
+        }
+
+        const { projectName, projectCategory, clientName, description } = req.body;
+        
+        const imageData = {
+            filename: req.file.filename,
+            originalName: req.file.originalname,
+            path: req.file.path,
+            size: req.file.size,
+            projectName: projectName || 'Proyecto sin nombre',
+            projectCategory: projectCategory || 'general',
+            clientName: clientName || 'Cliente',
+            description: description || ''
+        };
+
+        res.json({
+            success: true,
+            message: 'Imagen de galería subida exitosamente',
+            image: {
+                filename: req.file.filename,
+                url: `/uploads/gallery/${req.file.filename}`,
+                projectName: projectName,
+                projectCategory: projectCategory,
+                clientName: clientName,
+                description: description
+            }
+        });
+
+    } catch (error) {
+        console.error('❌ Error subiendo imagen de galería:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al subir la imagen de la galería'
+        });
+    }
+});
+
+// Endpoint para obtener imágenes de catálogo
+app.get('/api/catalog-images', async (req, res) => {
+    try {
+        const catalogDir = 'uploads/catalog';
+        
+        if (!fs.existsSync(catalogDir)) {
+            return res.json({
+                success: true,
+                images: []
+            });
+        }
+
+        const files = fs.readdirSync(catalogDir);
+        const images = files
+            .filter(file => /\.(jpg|jpeg|png|webp)$/i.test(file))
+            .map(file => ({
+                filename: file,
+                url: `/uploads/catalog/${file}`,
+                uploadDate: fs.statSync(path.join(catalogDir, file)).mtime
+            }))
+            .sort((a, b) => new Date(b.uploadDate) - new Date(a.uploadDate));
+
+        res.json({
+            success: true,
+            images: images
+        });
+
+    } catch (error) {
+        console.error('❌ Error obteniendo imágenes de catálogo:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al obtener las imágenes del catálogo'
+        });
+    }
+});
+
+// Endpoint para obtener imágenes de galería
+app.get('/api/gallery-images', async (req, res) => {
+    try {
+        const galleryDir = 'uploads/gallery';
+        
+        if (!fs.existsSync(galleryDir)) {
+            return res.json({
+                success: true,
+                images: []
+            });
+        }
+
+        const files = fs.readdirSync(galleryDir);
+        const images = files
+            .filter(file => /\.(jpg|jpeg|png|webp)$/i.test(file))
+            .map(file => ({
+                filename: file,
+                url: `/uploads/gallery/${file}`,
+                uploadDate: fs.statSync(path.join(galleryDir, file)).mtime
+            }))
+            .sort((a, b) => new Date(b.uploadDate) - new Date(a.uploadDate));
+
+        res.json({
+            success: true,
+            images: images
+        });
+
+    } catch (error) {
+        console.error('❌ Error obteniendo imágenes de galería:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al obtener las imágenes de la galería'
+        });
+    }
+});
+
+// Endpoint para eliminar imagen de catálogo
+app.delete('/api/catalog-image/:filename', async (req, res) => {
+    try {
+        const filename = req.params.filename;
+        const filePath = path.join('uploads/catalog', filename);
+
+        if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+            res.json({
+                success: true,
+                message: 'Imagen eliminada exitosamente'
+            });
+        } else {
+            res.status(404).json({
+                success: false,
+                message: 'Imagen no encontrada'
+            });
+        }
+
+    } catch (error) {
+        console.error('❌ Error eliminando imagen de catálogo:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al eliminar la imagen'
+        });
+    }
+});
+
+// Endpoint para eliminar imagen de galería
+app.delete('/api/gallery-image/:filename', async (req, res) => {
+    try {
+        const filename = req.params.filename;
+        const filePath = path.join('uploads/gallery', filename);
+
+        if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+            res.json({
+                success: true,
+                message: 'Imagen eliminada exitosamente'
+            });
+        } else {
+            res.status(404).json({
+                success: false,
+                message: 'Imagen no encontrada'
+            });
+        }
+
+    } catch (error) {
+        console.error('❌ Error eliminando imagen de galería:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al eliminar la imagen'
+        });
+    }
+});
+
+// Iniciar servidor
+app.listen(PORT, () => {
+    console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
+    console.log(`📊 Base de datos: ${dbConfig.database}`);
 });
 
 // Manejo de cierre graceful

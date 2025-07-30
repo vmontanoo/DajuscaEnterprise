@@ -2062,6 +2062,526 @@ function initOrderSystem() {
 // Inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
     initOrderSystem();
+    initImageManagement();
 });
+
+// ========================
+// SISTEMA DE GESTIÓN DE IMÁGENES
+// ========================
+
+let isAdminLoggedIn = false;
+let currentAdminMode = null;
+
+// Inicializar sistema de gestión de imágenes
+function initImageManagement() {
+    setupAdminEventListeners();
+    loadCatalogImages();
+    loadGalleryImages();
+    console.log('✅ Sistema de gestión de imágenes inicializado');
+}
+
+// Configurar event listeners para administración
+function setupAdminEventListeners() {
+    // Admin login form
+    const adminLoginForm = document.getElementById('admin-login-form');
+    if (adminLoginForm) {
+        adminLoginForm.addEventListener('submit', handleAdminLogin);
+    }
+
+    // Catalog upload form
+    const catalogUploadForm = document.getElementById('catalog-upload-form');
+    if (catalogUploadForm) {
+        catalogUploadForm.addEventListener('submit', handleCatalogUpload);
+    }
+
+    // Gallery upload form
+    const galleryUploadForm = document.getElementById('gallery-upload-form');
+    if (galleryUploadForm) {
+        galleryUploadForm.addEventListener('submit', handleGalleryUpload);
+    }
+}
+
+// Funciones de administración
+function showAdminLogin() {
+    const modal = document.getElementById('admin-login-modal');
+    if (modal) {
+        modal.style.display = 'block';
+    }
+}
+
+function hideAdminLogin() {
+    const modal = document.getElementById('admin-login-modal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+function handleAdminLogin(e) {
+    e.preventDefault();
+    
+    const username = document.getElementById('admin-username').value;
+    const password = document.getElementById('admin-password').value;
+    
+    // Simple admin validation (en producción usar autenticación más segura)
+    if (username === 'admin' && password === 'dajusca2024') {
+        isAdminLoggedIn = true;
+        hideAdminLogin();
+        showAdminPanel();
+        showMessage('Sesión iniciada correctamente', 'success');
+    } else {
+        showMessage('Credenciales incorrectas', 'error');
+    }
+}
+
+function showAdminPanel() {
+    const panel = document.getElementById('admin-panel');
+    if (panel && isAdminLoggedIn) {
+        panel.style.display = 'block';
+        document.body.style.paddingTop = '60px';
+    }
+}
+
+function toggleAdminMode(mode, show) {
+    if (!isAdminLoggedIn) {
+        showMessage('Acceso denegado', 'error');
+        return;
+    }
+
+    currentAdminMode = show ? mode : null;
+    
+    if (mode === 'catalog') {
+        const controls = document.getElementById('catalog-admin-controls');
+        if (controls) {
+            controls.style.display = show ? 'block' : 'none';
+        }
+        
+        if (show) {
+            document.querySelector('.catalog').classList.add('admin-mode');
+        } else {
+            document.querySelector('.catalog').classList.remove('admin-mode');
+        }
+    } else if (mode === 'gallery') {
+        const controls = document.getElementById('gallery-admin-controls');
+        if (controls) {
+            controls.style.display = show ? 'block' : 'none';
+        }
+        
+        if (show) {
+            document.querySelector('.gallery').classList.add('admin-mode');
+        } else {
+            document.querySelector('.gallery').classList.remove('admin-mode');
+        }
+    }
+}
+
+function logoutAdmin() {
+    isAdminLoggedIn = false;
+    currentAdminMode = null;
+    
+    const panel = document.getElementById('admin-panel');
+    if (panel) {
+        panel.style.display = 'none';
+    }
+    
+    document.body.style.paddingTop = '0';
+    
+    // Ocultar controles de administración
+    toggleAdminMode('catalog', false);
+    toggleAdminMode('gallery', false);
+    
+    showMessage('Sesión cerrada', 'success');
+}
+
+// Funciones de carga de imágenes
+async function loadCatalogImages() {
+    try {
+        const response = await fetch('/api/catalog-images');
+        const data = await response.json();
+        
+        if (data.success) {
+            renderCatalogItems(data.images);
+        }
+    } catch (error) {
+        console.error('Error cargando imágenes del catálogo:', error);
+        renderDefaultCatalogItems();
+    }
+}
+
+async function loadGalleryImages() {
+    try {
+        const response = await fetch('/api/gallery-images');
+        const data = await response.json();
+        
+        if (data.success) {
+            renderGalleryItems(data.images);
+        }
+    } catch (error) {
+        console.error('Error cargando imágenes de la galería:', error);
+        renderDefaultGalleryItems();
+    }
+}
+
+// Renderizar elementos del catálogo
+function renderCatalogItems(images) {
+    const catalogGrid = document.querySelector('.catalog-grid');
+    if (!catalogGrid) return;
+
+    // Si no hay imágenes, mostrar elementos por defecto
+    if (!images || images.length === 0) {
+        renderDefaultCatalogItems();
+        return;
+    }
+
+    catalogGrid.innerHTML = '';
+
+    images.forEach((image, index) => {
+        const item = createCatalogItem(image, index);
+        catalogGrid.appendChild(item);
+    });
+}
+
+function renderDefaultCatalogItems() {
+    const catalogGrid = document.querySelector('.catalog-grid');
+    if (!catalogGrid) return;
+
+    const defaultItems = [
+        { category: 'repisas', name: 'Repisas Flotantes', price: '$45.000', description: 'Elegantes repisas flotantes para maximizar el espacio', icon: 'fas fa-layer-group' },
+        { category: 'gaveteros', name: 'Gaveteros Modernos', price: '$180.000', description: 'Gaveteros funcionales con diseño contemporáneo', icon: 'fas fa-archive' },
+        { category: 'closets', name: 'Closets Empotrados', price: '$850.000', description: 'Closets personalizados que aprovechan cada centímetro', icon: 'fas fa-door-open' },
+        { category: 'entretenimiento', name: 'Centros de Entretenimiento', price: '$320.000', description: 'Muebles para TV con estilo y funcionalidad', icon: 'fas fa-tv' },
+        { category: 'cocina', name: 'Cocinas Integrales', price: '$1.500.000', description: 'Cocinas completas diseñadas a tu medida', icon: 'fas fa-utensils' },
+        { category: 'escritorios', name: 'Escritorios Ejecutivos', price: '$280.000', description: 'Espacios de trabajo diseñados para la productividad', icon: 'fas fa-desktop' }
+    ];
+
+    catalogGrid.innerHTML = '';
+
+    defaultItems.forEach((item, index) => {
+        const element = createDefaultCatalogItem(item, index);
+        catalogGrid.appendChild(element);
+    });
+}
+
+function createCatalogItem(image, index) {
+    const item = document.createElement('div');
+    item.className = 'catalog-item';
+    item.setAttribute('data-category', 'general');
+
+    item.innerHTML = `
+        <div class="catalog-image">
+            <img src="${image.url}" alt="Producto" loading="lazy">
+            <div class="catalog-overlay">
+                <button class="btn-view" onclick="openModal('product-${index}')">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn-customize" onclick="openConfigurator('general')">
+                    <i class="fas fa-cog"></i>
+                </button>
+                ${isAdminLoggedIn ? `
+                <button class="btn-delete" onclick="deleteCatalogImage('${image.filename}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+                ` : ''}
+            </div>
+        </div>
+        <div class="catalog-info">
+            <h3>Producto ${index + 1}</h3>
+            <p>Mueble personalizado de alta calidad</p>
+            <div class="catalog-price">Consultar precio</div>
+        </div>
+    `;
+
+    return item;
+}
+
+function createDefaultCatalogItem(itemData, index) {
+    const item = document.createElement('div');
+    item.className = 'catalog-item';
+    item.setAttribute('data-category', itemData.category);
+
+    item.innerHTML = `
+        <div class="catalog-image">
+            <div class="image-placeholder ${itemData.category}-img">
+                <i class="${itemData.icon}"></i>
+            </div>
+            <div class="catalog-overlay">
+                <button class="btn-view" onclick="openModal('${itemData.category}-${index}')">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn-customize" onclick="openConfigurator('${itemData.category}')">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </div>
+        <div class="catalog-info">
+            <h3>${itemData.name}</h3>
+            <p>${itemData.description}</p>
+            <div class="catalog-price">Desde ${itemData.price}</div>
+        </div>
+    `;
+
+    return item;
+}
+
+// Renderizar elementos de la galería
+function renderGalleryItems(images) {
+    const galleryGrid = document.querySelector('.gallery-grid');
+    if (!galleryGrid) return;
+
+    if (!images || images.length === 0) {
+        renderDefaultGalleryItems();
+        return;
+    }
+
+    galleryGrid.innerHTML = '';
+
+    images.forEach((image, index) => {
+        const item = createGalleryItem(image, index);
+        galleryGrid.appendChild(item);
+    });
+}
+
+function renderDefaultGalleryItems() {
+    const galleryGrid = document.querySelector('.gallery-grid');
+    if (!galleryGrid) return;
+
+    const defaultItems = [
+        { category: 'closets', name: 'Closet Moderno', client: 'Familia Rodríguez', icon: 'fas fa-door-open' },
+        { category: 'cocina', name: 'Cocina Integral', client: 'Apartamento Downtown', icon: 'fas fa-utensils' },
+        { category: 'entretenimiento', name: 'Centro de Entretenimiento', client: 'Casa Familiar', icon: 'fas fa-tv' },
+        { category: 'escritorios', name: 'Oficina Ejecutiva', client: 'Empresa TechCorp', icon: 'fas fa-desktop' },
+        { category: 'gaveteros', name: 'Gavetero Vintage', client: 'Estudio de Diseño', icon: 'fas fa-archive' },
+        { category: 'repisas', name: 'Sistema de Repisas', client: 'Librería Moderna', icon: 'fas fa-layer-group' }
+    ];
+
+    galleryGrid.innerHTML = '';
+
+    defaultItems.forEach((item, index) => {
+        const element = createDefaultGalleryItem(item, index);
+        galleryGrid.appendChild(element);
+    });
+}
+
+function createGalleryItem(image, index) {
+    const item = document.createElement('div');
+    item.className = 'gallery-item';
+    item.setAttribute('data-category', 'general');
+
+    item.innerHTML = `
+        <div class="gallery-image">
+            <img src="${image.url}" alt="Proyecto" loading="lazy">
+            <div class="gallery-overlay">
+                <h4>Proyecto ${index + 1}</h4>
+                <p>Cliente: Sin especificar</p>
+                <button class="btn-gallery-view">Ver Detalles</button>
+                ${isAdminLoggedIn ? `
+                <button class="btn-delete" onclick="deleteGalleryImage('${image.filename}')" style="position: absolute; top: 10px; right: 10px;">
+                    <i class="fas fa-trash"></i>
+                </button>
+                ` : ''}
+            </div>
+        </div>
+    `;
+
+    return item;
+}
+
+function createDefaultGalleryItem(itemData, index) {
+    const item = document.createElement('div');
+    item.className = 'gallery-item';
+    item.setAttribute('data-category', itemData.category);
+
+    item.innerHTML = `
+        <div class="gallery-image">
+            <div class="image-placeholder gallery-${itemData.category}">
+                <i class="${itemData.icon}"></i>
+            </div>
+            <div class="gallery-overlay">
+                <h4>${itemData.name}</h4>
+                <p>Cliente: ${itemData.client}</p>
+                <button class="btn-gallery-view">Ver Detalles</button>
+            </div>
+        </div>
+    `;
+
+    return item;
+}
+
+// Manejo de subida de imágenes
+async function handleCatalogUpload(e) {
+    e.preventDefault();
+    
+    if (!isAdminLoggedIn) {
+        showMessage('Acceso denegado', 'error');
+        return;
+    }
+
+    const formData = new FormData(e.target);
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Subiendo...';
+
+    try {
+        const response = await fetch('/api/upload-catalog-image', {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showMessage('Imagen subida exitosamente', 'success');
+            e.target.reset();
+            loadCatalogImages(); // Recargar imágenes
+        } else {
+            showMessage(data.message || 'Error al subir imagen', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showMessage('Error de conexión', 'error');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-upload"></i> Subir Producto';
+    }
+}
+
+async function handleGalleryUpload(e) {
+    e.preventDefault();
+    
+    if (!isAdminLoggedIn) {
+        showMessage('Acceso denegado', 'error');
+        return;
+    }
+
+    const formData = new FormData(e.target);
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Subiendo...';
+
+    try {
+        const response = await fetch('/api/upload-gallery-image', {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showMessage('Proyecto subido exitosamente', 'success');
+            e.target.reset();
+            loadGalleryImages(); // Recargar imágenes
+        } else {
+            showMessage(data.message || 'Error al subir proyecto', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showMessage('Error de conexión', 'error');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-upload"></i> Subir Proyecto';
+    }
+}
+
+// Funciones para eliminar imágenes
+async function deleteCatalogImage(filename) {
+    if (!isAdminLoggedIn) {
+        showMessage('Acceso denegado', 'error');
+        return;
+    }
+
+    if (!confirm('¿Estás seguro de que quieres eliminar esta imagen?')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/catalog-image/${filename}`, {
+            method: 'DELETE'
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showMessage('Imagen eliminada exitosamente', 'success');
+            loadCatalogImages(); // Recargar imágenes
+        } else {
+            showMessage(data.message || 'Error al eliminar imagen', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showMessage('Error de conexión', 'error');
+    }
+}
+
+async function deleteGalleryImage(filename) {
+    if (!isAdminLoggedIn) {
+        showMessage('Acceso denegado', 'error');
+        return;
+    }
+
+    if (!confirm('¿Estás seguro de que quieres eliminar esta imagen?')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/gallery-image/${filename}`, {
+            method: 'DELETE'
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showMessage('Imagen eliminada exitosamente', 'success');
+            loadGalleryImages(); // Recargar imágenes
+        } else {
+            showMessage(data.message || 'Error al eliminar imagen', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showMessage('Error de conexión', 'error');
+    }
+}
+
+// Función para mostrar mensajes
+function showMessage(message, type) {
+    // Crear elemento de mensaje
+    const messageEl = document.createElement('div');
+    messageEl.className = `message-overlay ${type}`;
+    messageEl.textContent = message;
+
+    // Agregar al DOM
+    document.body.appendChild(messageEl);
+
+    // Remover después de 3 segundos
+    setTimeout(() => {
+        if (messageEl.parentNode) {
+            messageEl.parentNode.removeChild(messageEl);
+        }
+    }, 3000);
+}
+
+// Función para filtrar elementos (actualizada para manejar imágenes dinámicas)
+function filterCatalogItems(category) {
+    const items = document.querySelectorAll('.catalog-item');
+    
+    items.forEach(item => {
+        const itemCategory = item.getAttribute('data-category');
+        
+        if (category === 'all' || itemCategory === category) {
+            item.style.display = 'block';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+
+    // Actualizar botones de filtro
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    filterBtns.forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.getAttribute('data-filter') === category) {
+            btn.classList.add('active');
+        }
+    });
+}
 
 console.log('🪑 DAJUSCA Script loaded successfully!');
