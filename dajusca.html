@@ -26,6 +26,7 @@
                     <li class="nav-item"><a href="#configurador" class="nav-link">Configurador 3D</a></li>
                     <li class="nav-item"><a href="#galeria" class="nav-link">Galería</a></li>
                     <li class="nav-item"><a href="#testimonios" class="nav-link">Testimonios</a></li>
+                    <li class="nav-item"><a href="#ordenes" class="nav-link">Hacer Pedido</a></li>
                     <li class="nav-item"><a href="#contacto" class="nav-link">Contacto</a></li>
                 </ul>
                 <div class="nav-toggle">
@@ -592,6 +593,134 @@
                         <i class="fas fa-chevron-right"></i>
                     </button>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección de Órdenes Personalizadas -->
+    <section id="ordenes" class="custom-orders">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Hacer Pedido Personalizado</h2>
+                <p class="section-subtitle">Envíanos la imagen de referencia de tu mueble ideal y nosotros lo haremos realidad</p>
+            </div>
+            
+            <div class="orders-content">
+                <div class="order-info">
+                    <h3>¿Cómo funciona?</h3>
+                    <div class="process-steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <h4>Sube tu imagen</h4>
+                            <p>Comparte una foto PNG del mueble que quieres que creemos</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <h4>Cuéntanos los detalles</h4>
+                            <p>Describe las medidas, materiales y características específicas</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <h4>Te contactamos</h4>
+                            <p>Nuestro equipo se pondrá en contacto contigo para finalizar el proyecto</p>
+                        </div>
+                    </div>
+                    
+                    <div class="order-benefits">
+                        <h4>Ventajas de nuestro servicio:</h4>
+                        <ul>
+                            <li><i class="fas fa-check"></i> Diseño 100% personalizado</li>
+                            <li><i class="fas fa-check"></i> Materiales de primera calidad</li>
+                            <li><i class="fas fa-check"></i> Presupuesto sin compromiso</li>
+                            <li><i class="fas fa-check"></i> Entrega en tiempo record</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <form class="order-form" id="orderForm" enctype="multipart/form-data">
+                    <div class="form-header">
+                        <h3>Envía tu solicitud</h3>
+                        <p>Completa el formulario y adjunta la imagen de referencia</p>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="clientName">Nombre completo *</label>
+                            <input type="text" id="clientName" name="clientName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="clientPhone">Teléfono *</label>
+                            <input type="tel" id="clientPhone" name="clientPhone" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="clientEmail">Email *</label>
+                            <input type="email" id="clientEmail" name="clientEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="furnitureType">Tipo de mueble</label>
+                            <select id="furnitureType" name="furnitureType">
+                                <option value="">Selecciona una opción</option>
+                                <option value="closet">Clóset</option>
+                                <option value="cocina">Cocina integral</option>
+                                <option value="repisa">Repisa</option>
+                                <option value="gavetero">Gavetero</option>
+                                <option value="mesa">Mesa</option>
+                                <option value="silla">Silla</option>
+                                <option value="cama">Cama</option>
+                                <option value="otro">Otro</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="projectDescription">Descripción del proyecto *</label>
+                        <textarea id="projectDescription" name="projectDescription" rows="4" 
+                                placeholder="Describe el mueble que necesitas: medidas aproximadas, materiales preferidos, color, funcionalidad específica, etc." required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="budget">Presupuesto aproximado</label>
+                        <select id="budget" name="budget">
+                            <option value="">Selecciona un rango</option>
+                            <option value="100000-300000">$100,000 - $300,000 COP</option>
+                            <option value="300000-500000">$300,000 - $500,000 COP</option>
+                            <option value="500000-1000000">$500,000 - $1,000,000 COP</option>
+                            <option value="1000000+">Más de $1,000,000 COP</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group file-upload">
+                        <label for="referenceImage">Imagen de referencia * (Solo archivos PNG)</label>
+                        <div class="file-input-container">
+                            <input type="file" id="referenceImage" name="referenceImage" 
+                                   accept=".png" required>
+                            <div class="file-input-display">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span class="file-text">Arrastra tu archivo PNG aquí o haz clic para seleccionar</span>
+                                <span class="file-name"></span>
+                            </div>
+                        </div>
+                        <small>Máximo 10MB. Solo archivos PNG.</small>
+                    </div>
+                    
+                    <div class="form-group checkbox-group">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="acceptTerms" name="acceptTerms" required>
+                            <span class="checkmark"></span>
+                            Acepto los términos y condiciones y autorizo el tratamiento de mis datos personales
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-paper-plane"></i>
+                        Enviar Solicitud
+                    </button>
+                    
+                    <div class="form-status" id="formStatus"></div>
+                </form>
             </div>
         </div>
     </section>
