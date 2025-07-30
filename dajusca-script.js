@@ -218,12 +218,19 @@ function openConfigurator(category) {
             'repisas': 'repisa',
             'gaveteros': 'gavetero',
             'escritorios': 'escritorio',
-            'closets': 'escritorio', // Usar escritorio como base
-            'entretenimiento': 'mesa',
-            'cocina': 'mesa'
+            'closets': 'closet',
+            'entretenimiento': 'entretenimiento',
+            'cocina': 'cocina',
+            'repisa-flotante': 'repisa',
+            'gavetero-moderno': 'gavetero',
+            'closet-empotrado': 'closet',
+            'centro-entretenimiento': 'entretenimiento',
+            'cocina-integral': 'cocina',
+            'escritorio-ejecutivo': 'escritorio'
         };
         furnitureSelect.value = categoryMap[category] || 'repisa';
         update3DModel();
+        updatePrice();
     }
 }
 
@@ -322,6 +329,9 @@ function init3DConfigurator() {
         camera.position.clampLength(2, 10);
     });
 
+    // Inicializar rangos de dimensiones
+    updateDimensionRanges();
+    
     // Crear modelo inicial
     update3DModel();
 
@@ -379,6 +389,7 @@ function setupConfiguratorControls() {
     const furnitureType = document.getElementById('furniture-type');
     if (furnitureType) {
         furnitureType.addEventListener('change', () => {
+            updateDimensionRanges();
             update3DModel();
             updatePrice();
         });
@@ -434,7 +445,7 @@ function update3DModel() {
     let geometry;
     switch (furnitureType) {
         case 'repisa':
-            geometry = new THREE.BoxGeometry(width, 0.05, depth);
+            geometry = createShelfGeometry(width, height, depth);
             break;
         case 'gavetero':
             geometry = createDrawerGeometry(width, height, depth);
@@ -442,69 +453,355 @@ function update3DModel() {
         case 'escritorio':
             geometry = createDeskGeometry(width, height, depth);
             break;
+        case 'closet':
+            geometry = createClosetGeometry(width, height, depth);
+            break;
+        case 'entretenimiento':
+            geometry = createEntertainmentCenterGeometry(width, height, depth);
+            break;
+        case 'cocina':
+            geometry = createKitchenGeometry(width, height, depth);
+            break;
         case 'mesa':
             geometry = createTableGeometry(width, height, depth);
             break;
         default:
-            geometry = new THREE.BoxGeometry(width, height, depth);
+            geometry = createShelfGeometry(width, height, depth);
     }
 
-    // Crear material
-    let material;
-    switch (activeMaterial) {
+    // Crear material base
+    const baseMaterial = createMaterial(activeColor, activeMaterial);
+    
+    // Si la geometría es un grupo, aplicar material a todos los meshes
+    if (geometry instanceof THREE.Group) {
+        currentMesh = geometry;
+        geometry.traverse((child) => {
+            if (child instanceof THREE.Mesh) {
+                // Aplicar material específico según el tipo de componente
+                if (child.userData.materialType === 'glass') {
+                    child.material = createMaterial(activeColor, 'glass');
+                } else if (child.userData.materialType === 'metal') {
+                    child.material = createMaterial('#C0C0C0', 'metal');
+                } else {
+                    child.material = baseMaterial.clone();
+                }
+                child.castShadow = true;
+                child.receiveShadow = true;
+            }
+        });
+    } else {
+        // Geometría simple
+        currentMesh = new THREE.Mesh(geometry, baseMaterial);
+        currentMesh.castShadow = true;
+        currentMesh.receiveShadow = true;
+    }
+    
+    // Posicionar el mueble
+    if (furnitureType === 'repisa') {
+        currentMesh.position.y = height / 2;
+    } else {
+        currentMesh.position.y = 0;
+    }
+    
+    scene.add(currentMesh);
+}
+
+// Función para crear materiales
+function createMaterial(color, materialType) {
+    switch (materialType) {
         case 'wood':
-            material = new THREE.MeshLambertMaterial({ 
-                color: activeColor,
+            return new THREE.MeshLambertMaterial({ 
+                color: color,
                 transparent: false
             });
-            break;
         case 'metal':
-            material = new THREE.MeshStandardMaterial({ 
-                color: activeColor,
+            return new THREE.MeshStandardMaterial({ 
+                color: color,
                 metalness: 0.8,
                 roughness: 0.2
             });
-            break;
         case 'glass':
-            material = new THREE.MeshPhysicalMaterial({ 
-                color: activeColor,
+            return new THREE.MeshPhysicalMaterial({ 
+                color: color,
                 transparent: true,
-                opacity: 0.7,
-                transmission: 0.9
+                opacity: 0.3,
+                transmission: 0.9,
+                roughness: 0.1
             });
-            break;
         default:
-            material = new THREE.MeshLambertMaterial({ color: activeColor });
+            return new THREE.MeshLambertMaterial({ color: color });
     }
+}
 
-    // Crear mesh
-    currentMesh = new THREE.Mesh(geometry, material);
-    currentMesh.castShadow = true;
-    currentMesh.receiveShadow = true;
+// ========================
+// GEOMETRÍAS 3D ESPECÍFICAS PARA CADA MUEBLE
+// ========================
+
+function createShelfGeometry(width, height, depth) {
+    const group = new THREE.Group();
     
-    // Posicionar el mueble
-    currentMesh.position.y = height / 2;
+    // Determinar número de repisas basado en la altura
+    const numShelves = Math.max(1, Math.floor(height * 100 / 30)); // Una repisa cada 30cm
+    const shelfThickness = 0.03;
+    const shelfSpacing = height / numShelves;
     
-    scene.add(currentMesh);
+    for (let i = 0; i < numShelves; i++) {
+        const shelfGeometry = new THREE.BoxGeometry(width, shelfThickness, depth);
+        const shelf = new THREE.Mesh(shelfGeometry);
+        shelf.position.y = i * shelfSpacing + shelfThickness / 2;
+        group.add(shelf);
+    }
+    
+    // Soportes laterales (opcionales para repisas flotantes)
+    if (numShelves > 1) {
+        const supportGeometry = new THREE.BoxGeometry(0.02, height, depth);
+        
+        const leftSupport = new THREE.Mesh(supportGeometry);
+        leftSupport.position.set(-width/2 + 0.01, height/2, 0);
+        group.add(leftSupport);
+        
+        const rightSupport = new THREE.Mesh(supportGeometry);
+        rightSupport.position.set(width/2 - 0.01, height/2, 0);
+        group.add(rightSupport);
+    }
+    
+    return group;
 }
 
 function createDrawerGeometry(width, height, depth) {
     const group = new THREE.Group();
     
-    // Cuerpo principal
+    // Cuerpo principal del gavetero
     const bodyGeometry = new THREE.BoxGeometry(width, height, depth);
     const body = new THREE.Mesh(bodyGeometry);
+    body.position.y = height / 2;
     group.add(body);
     
-    // Gavetas (representadas como líneas)
-    const drawers = Math.floor(height * 100 / 20); // Una gaveta cada 20cm
-    for (let i = 0; i < drawers; i++) {
-        const drawerY = (i + 0.5) * (height / drawers) - height / 2;
-        const drawerGeometry = new THREE.PlaneGeometry(width * 0.9, height / drawers * 0.8);
-        const drawerMesh = new THREE.Mesh(drawerGeometry);
-        drawerMesh.position.set(0, drawerY, depth / 2 + 0.001);
-        group.add(drawerMesh);
+    // Calcular número de gavetas
+    const numDrawers = Math.max(2, Math.floor(height * 100 / 25)); // Una gaveta cada 25cm
+    const drawerHeight = height / numDrawers;
+    
+    for (let i = 0; i < numDrawers; i++) {
+        const drawerY = (i + 0.5) * drawerHeight;
+        
+        // Frente de la gaveta
+        const drawerFrontGeometry = new THREE.BoxGeometry(width * 0.95, drawerHeight * 0.8, 0.02);
+        const drawerFront = new THREE.Mesh(drawerFrontGeometry);
+        drawerFront.position.set(0, drawerY, depth / 2 + 0.01);
+        group.add(drawerFront);
+        
+        // Manija de la gaveta
+        const handleGeometry = new THREE.CylinderGeometry(0.008, 0.008, width * 0.3);
+        const handle = new THREE.Mesh(handleGeometry);
+        handle.rotation.z = Math.PI / 2;
+        handle.position.set(0, drawerY, depth / 2 + 0.03);
+        handle.userData.materialType = 'metal';
+        group.add(handle);
+        
+        // Líneas divisorias
+        if (i > 0) {
+            const dividerGeometry = new THREE.BoxGeometry(width, 0.005, depth);
+            const divider = new THREE.Mesh(dividerGeometry);
+            divider.position.set(0, i * drawerHeight, 0);
+            group.add(divider);
+        }
     }
+    
+    return group;
+}
+
+function createClosetGeometry(width, height, depth) {
+    const group = new THREE.Group();
+    
+    // Cuerpo principal del closet
+    const bodyGeometry = new THREE.BoxGeometry(width, height, depth);
+    const body = new THREE.Mesh(bodyGeometry);
+    body.position.y = height / 2;
+    group.add(body);
+    
+    // Puertas del closet
+    const numDoors = width > 1.5 ? 3 : 2; // 3 puertas si es muy ancho
+    const doorWidth = width / numDoors;
+    
+    for (let i = 0; i < numDoors; i++) {
+        const doorGeometry = new THREE.BoxGeometry(doorWidth * 0.95, height * 0.9, 0.03);
+        const door = new THREE.Mesh(doorGeometry);
+        door.position.set(
+            -width/2 + (i + 0.5) * doorWidth,
+            height * 0.55,
+            depth / 2 + 0.02
+        );
+        group.add(door);
+        
+        // Manija de la puerta
+        const handleGeometry = new THREE.BoxGeometry(0.02, 0.1, 0.03);
+        const handle = new THREE.Mesh(handleGeometry);
+        handle.position.set(
+            door.position.x + doorWidth * 0.35,
+            height * 0.55,
+            depth / 2 + 0.05
+        );
+        handle.userData.materialType = 'metal';
+        group.add(handle);
+    }
+    
+    // Barras internas para colgar ropa
+    const barGeometry = new THREE.CylinderGeometry(0.01, 0.01, width * 0.8);
+    const topBar = new THREE.Mesh(barGeometry);
+    topBar.rotation.z = Math.PI / 2;
+    topBar.position.set(0, height * 0.75, depth * 0.3);
+    topBar.userData.materialType = 'metal';
+    group.add(topBar);
+    
+    // Repisas internas
+    const shelfGeometry = new THREE.BoxGeometry(width * 0.9, 0.02, depth * 0.4);
+    const bottomShelf = new THREE.Mesh(shelfGeometry);
+    bottomShelf.position.set(0, height * 0.3, -depth * 0.2);
+    group.add(bottomShelf);
+    
+    return group;
+}
+
+function createEntertainmentCenterGeometry(width, height, depth) {
+    const group = new THREE.Group();
+    
+    // Base principal
+    const baseGeometry = new THREE.BoxGeometry(width, height, depth);
+    const base = new THREE.Mesh(baseGeometry);
+    base.position.y = height / 2;
+    group.add(base);
+    
+    // Compartimento central para TV
+    const tvSpaceHeight = height * 0.4;
+    const tvSpaceGeometry = new THREE.BoxGeometry(width * 0.6, tvSpaceHeight, depth * 0.9);
+    const tvSpace = new THREE.Mesh(tvSpaceGeometry);
+    tvSpace.position.set(0, height * 0.7, 0);
+    
+    // Crear hueco restando geometría (simulado con bordes)
+    const frontFrame = new THREE.BoxGeometry(width * 0.6, 0.02, 0.02);
+    const topFrame = new THREE.Mesh(frontFrame);
+    topFrame.position.set(0, height * 0.9, depth / 2);
+    group.add(topFrame);
+    
+    const bottomFrame = new THREE.Mesh(frontFrame);
+    bottomFrame.position.set(0, height * 0.5, depth / 2);
+    group.add(bottomFrame);
+    
+    // Marcos laterales
+    const sideFrameGeometry = new THREE.BoxGeometry(0.02, tvSpaceHeight, 0.02);
+    const leftFrame = new THREE.Mesh(sideFrameGeometry);
+    leftFrame.position.set(-width * 0.3, height * 0.7, depth / 2);
+    group.add(leftFrame);
+    
+    const rightFrame = new THREE.Mesh(sideFrameGeometry);
+    rightFrame.position.set(width * 0.3, height * 0.7, depth / 2);
+    group.add(rightFrame);
+    
+    // Compartimentos laterales con puertas
+    const sideCompartmentWidth = width * 0.2;
+    const sideCompartmentGeometry = new THREE.BoxGeometry(sideCompartmentWidth, height * 0.4, 0.02);
+    
+    // Puerta izquierda
+    const leftDoor = new THREE.Mesh(sideCompartmentGeometry);
+    leftDoor.position.set(-width * 0.4, height * 0.25, depth / 2 + 0.01);
+    group.add(leftDoor);
+    
+    // Puerta derecha
+    const rightDoor = new THREE.Mesh(sideCompartmentGeometry);
+    rightDoor.position.set(width * 0.4, height * 0.25, depth / 2 + 0.01);
+    group.add(rightDoor);
+    
+    // Manijas
+    const handleGeometry = new THREE.SphereGeometry(0.015);
+    const leftHandle = new THREE.Mesh(handleGeometry);
+    leftHandle.position.set(-width * 0.35, height * 0.25, depth / 2 + 0.03);
+    leftHandle.userData.materialType = 'metal';
+    group.add(leftHandle);
+    
+    const rightHandle = new THREE.Mesh(handleGeometry);
+    rightHandle.position.set(width * 0.35, height * 0.25, depth / 2 + 0.03);
+    rightHandle.userData.materialType = 'metal';
+    group.add(rightHandle);
+    
+    // Repisa inferior para equipos
+    const shelfGeometry = new THREE.BoxGeometry(width * 0.8, 0.02, depth * 0.8);
+    const equipmentShelf = new THREE.Mesh(shelfGeometry);
+    equipmentShelf.position.set(0, height * 0.15, 0);
+    group.add(equipmentShelf);
+    
+    return group;
+}
+
+function createKitchenGeometry(width, height, depth) {
+    const group = new THREE.Group();
+    
+    // Muebles base (bajo mesón)
+    const baseHeight = height * 0.4;
+    const baseGeometry = new THREE.BoxGeometry(width, baseHeight, depth);
+    const base = new THREE.Mesh(baseGeometry);
+    base.position.y = baseHeight / 2;
+    group.add(base);
+    
+    // Mesón/Superficie de trabajo
+    const counterGeometry = new THREE.BoxGeometry(width, 0.05, depth);
+    const counter = new THREE.Mesh(counterGeometry);
+    counter.position.y = baseHeight + 0.025;
+    counter.userData.materialType = 'glass'; // Simular granito/cuarzo
+    group.add(counter);
+    
+    // Muebles altos
+    const upperHeight = height * 0.35;
+    const upperGeometry = new THREE.BoxGeometry(width * 0.8, upperHeight, depth * 0.4);
+    const upperCabinets = new THREE.Mesh(upperGeometry);
+    upperCabinets.position.set(0, height - upperHeight / 2, depth * 0.3);
+    group.add(upperCabinets);
+    
+    // Puertas de muebles base
+    const numBaseDoors = Math.floor(width * 2); // 2 puertas por metro
+    const baseDoorWidth = width / numBaseDoors;
+    
+    for (let i = 0; i < numBaseDoors; i++) {
+        const doorGeometry = new THREE.BoxGeometry(baseDoorWidth * 0.9, baseHeight * 0.8, 0.02);
+        const door = new THREE.Mesh(doorGeometry);
+        door.position.set(
+            -width/2 + (i + 0.5) * baseDoorWidth,
+            baseHeight * 0.5,
+            depth / 2 + 0.01
+        );
+        group.add(door);
+        
+        // Manija
+        const handleGeometry = new THREE.BoxGeometry(0.01, 0.08, 0.02);
+        const handle = new THREE.Mesh(handleGeometry);
+        handle.position.set(
+            door.position.x + baseDoorWidth * 0.3,
+            baseHeight * 0.5,
+            depth / 2 + 0.03
+        );
+        handle.userData.materialType = 'metal';
+        group.add(handle);
+    }
+    
+    // Puertas de muebles altos
+    const numUpperDoors = Math.floor(width * 1.5);
+    const upperDoorWidth = (width * 0.8) / numUpperDoors;
+    
+    for (let i = 0; i < numUpperDoors; i++) {
+        const doorGeometry = new THREE.BoxGeometry(upperDoorWidth * 0.9, upperHeight * 0.8, 0.02);
+        const door = new THREE.Mesh(doorGeometry);
+        door.position.set(
+            -width * 0.4 + (i + 0.5) * upperDoorWidth,
+            height - upperHeight * 0.5,
+            depth * 0.5 + 0.01
+        );
+        group.add(door);
+    }
+    
+    // Salpicadero
+    const backsplashGeometry = new THREE.BoxGeometry(width, height * 0.15, 0.01);
+    const backsplash = new THREE.Mesh(backsplashGeometry);
+    backsplash.position.set(0, baseHeight + height * 0.075, depth / 2 + 0.005);
+    group.add(backsplash);
     
     return group;
 }
@@ -554,6 +851,70 @@ function createTableGeometry(width, height, depth) {
     return group;
 }
 
+function updateDimensionRanges() {
+    const furnitureType = document.getElementById('furniture-type')?.value || 'repisa';
+    const widthSlider = document.getElementById('width');
+    const heightSlider = document.getElementById('height');
+    const depthSlider = document.getElementById('depth');
+    
+    // Rangos específicos por tipo de mueble
+    const ranges = {
+        'repisa': {
+            width: { min: 50, max: 200, default: 120 },
+            height: { min: 15, max: 40, default: 25 },
+            depth: { min: 15, max: 50, default: 30 }
+        },
+        'gavetero': {
+            width: { min: 60, max: 120, default: 80 },
+            height: { min: 80, max: 180, default: 120 },
+            depth: { min: 40, max: 60, default: 50 }
+        },
+        'closet': {
+            width: { min: 100, max: 300, default: 200 },
+            height: { min: 180, max: 250, default: 220 },
+            depth: { min: 50, max: 80, default: 60 }
+        },
+        'entretenimiento': {
+            width: { min: 100, max: 250, default: 150 },
+            height: { min: 40, max: 80, default: 60 },
+            depth: { min: 30, max: 50, default: 40 }
+        },
+        'cocina': {
+            width: { min: 200, max: 500, default: 300 },
+            height: { min: 200, max: 250, default: 220 },
+            depth: { min: 60, max: 80, default: 65 }
+        },
+        'escritorio': {
+            width: { min: 100, max: 200, default: 140 },
+            height: { min: 70, max: 80, default: 75 },
+            depth: { min: 50, max: 80, default: 60 }
+        }
+    };
+    
+    const currentRanges = ranges[furnitureType] || ranges['repisa'];
+    
+    if (widthSlider) {
+        widthSlider.min = currentRanges.width.min;
+        widthSlider.max = currentRanges.width.max;
+        widthSlider.value = currentRanges.width.default;
+        document.getElementById('width-value').textContent = currentRanges.width.default;
+    }
+    
+    if (heightSlider) {
+        heightSlider.min = currentRanges.height.min;
+        heightSlider.max = currentRanges.height.max;
+        heightSlider.value = currentRanges.height.default;
+        document.getElementById('height-value').textContent = currentRanges.height.default;
+    }
+    
+    if (depthSlider) {
+        depthSlider.min = currentRanges.depth.min;
+        depthSlider.max = currentRanges.depth.max;
+        depthSlider.value = currentRanges.depth.default;
+        document.getElementById('depth-value').textContent = currentRanges.depth.default;
+    }
+}
+
 function updatePrice() {
     const width = parseInt(document.getElementById('width')?.value || 120);
     const height = parseInt(document.getElementById('height')?.value || 80);
@@ -561,28 +922,68 @@ function updatePrice() {
     const furnitureType = document.getElementById('furniture-type')?.value || 'repisa';
     const activeMaterial = document.querySelector('.material-btn.active')?.getAttribute('data-material') || 'wood';
 
-    // Cálculo básico de precio
+    // Cálculo del área/volumen según el tipo de mueble
+    const area = (width * height) / 10000; // m²
     const volume = (width * height * depth) / 1000000; // m³
-    let basePrice = 50000; // Precio base
     
-    // Multiplicadores por tipo
-    const typeMultipliers = {
-        'repisa': 1,
-        'gavetero': 2.5,
-        'escritorio': 3,
-        'mesa': 2
+    // Precios base por tipo de mueble (más realistas)
+    const basePrices = {
+        'repisa': 35000, // Precio base por m² para repisas
+        'gavetero': 180000, // Precio base por m³ para gaveteros
+        'closet': 750000, // Precio base por m³ para closets
+        'entretenimiento': 280000, // Precio base por m³ para centros de entretenimiento
+        'cocina': 1200000, // Precio base por m² para cocinas (más complejo)
+        'escritorio': 220000 // Precio base por m² para escritorios
     };
     
     // Multiplicadores por material
     const materialMultipliers = {
-        'wood': 1,
-        'metal': 1.5,
-        'glass': 2
+        'wood': 1.0,
+        'metal': 1.3,
+        'glass': 1.8
     };
     
-    const finalPrice = Math.round(basePrice * volume * 
-        (typeMultipliers[furnitureType] || 1) * 
-        (materialMultipliers[activeMaterial] || 1));
+    // Multiplicadores por complejidad (basado en dimensiones)
+    let complexityMultiplier = 1.0;
+    if (furnitureType === 'closet' && width > 200) complexityMultiplier = 1.2; // Closets grandes
+    if (furnitureType === 'cocina' && width > 300) complexityMultiplier = 1.3; // Cocinas grandes
+    if (furnitureType === 'gavetero' && height > 150) complexityMultiplier = 1.15; // Gaveteros altos
+    
+    let finalPrice;
+    
+    // Cálculo específico por tipo
+    switch (furnitureType) {
+        case 'repisa':
+        case 'escritorio':
+            // Basado en área (m²)
+            finalPrice = basePrices[furnitureType] * area;
+            break;
+        case 'cocina':
+            // Cocinas: precio por metro lineal + complejidad
+            const linearMeters = width / 100;
+            finalPrice = basePrices[furnitureType] * linearMeters;
+            break;
+        default:
+            // Otros muebles: basado en volumen (m³)
+            finalPrice = basePrices[furnitureType] * volume;
+    }
+    
+    // Aplicar multiplicadores
+    finalPrice *= materialMultipliers[activeMaterial] || 1;
+    finalPrice *= complexityMultiplier;
+    
+    // Asegurar precio mínimo
+    const minimumPrices = {
+        'repisa': 45000,
+        'gavetero': 180000,
+        'closet': 650000,
+        'entretenimiento': 250000,
+        'cocina': 1200000,
+        'escritorio': 200000
+    };
+    
+    finalPrice = Math.max(finalPrice, minimumPrices[furnitureType] || 50000);
+    finalPrice = Math.round(finalPrice / 1000) * 1000; // Redondear a miles
     
     const priceElement = document.getElementById('estimated-price');
     if (priceElement) {
