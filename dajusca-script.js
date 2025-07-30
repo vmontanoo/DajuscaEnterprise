@@ -2062,6 +2062,234 @@ function initOrderSystem() {
 // Inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
     initOrderSystem();
+    loadClosetInfo();
+});
+
+// ========================
+// SISTEMA DE CATÁLOGO DINÁMICO
+// ========================
+
+// Variable global para almacenar información del closet
+let closetData = null;
+
+// Cargar información del closet desde la API
+async function loadClosetInfo() {
+    try {
+        const response = await fetch('/api/closet-info');
+        if (response.ok) {
+            const result = await response.json();
+            if (result.success) {
+                closetData = result.data;
+                updateClosetDisplay();
+                console.log('✅ Información del closet cargada:', closetData);
+            }
+        }
+    } catch (error) {
+        console.error('❌ Error cargando información del closet:', error);
+        // Si hay error, usar datos por defecto
+        closetData = getDefaultClosetData();
+        updateClosetDisplay();
+    }
+}
+
+// Datos por defecto en caso de error
+function getDefaultClosetData() {
+    return {
+        id: 1,
+        nombre: 'Closet Empotrado Premium',
+        descripcion: 'Closet empotrado de lujo con acabados de primera calidad. Incluye sistema de iluminación LED, barras cromadas, cajones con guías telescópicas y espejo de cuerpo completo.',
+        precio: 1200000,
+        imagen: '/images/products/closets/closet-premium.jpg',
+        dimensiones: {
+            min: '150x60x220',
+            max: '400x80x250'
+        },
+        materiales: ['MDF', 'Melamina', 'Aluminio', 'Vidrio Templado'],
+        colores: ['Blanco Mate', 'Roble Claro', 'Nogal', 'Wengué'],
+        tiempoFabricacion: 15,
+        caracteristicas: [
+            'Sistema de iluminación LED integrado',
+            'Barras cromadas para colgado',
+            'Cajones con guías telescópicas',
+            'Espejo de cuerpo completo',
+            'Diseño modular adaptable',
+            'Acabados de primera calidad',
+            'Garantía de 2 años'
+        ]
+    };
+}
+
+// Actualizar la información mostrada en el catálogo
+function updateClosetDisplay() {
+    if (!closetData) return;
+
+    // Actualizar elementos del catálogo principal
+    const nameElement = document.getElementById('closet-name');
+    const descElement = document.getElementById('closet-description');
+    const priceElement = document.getElementById('closet-price');
+    const imageElement = document.getElementById('closet-image');
+
+    if (nameElement) nameElement.textContent = closetData.nombre;
+    if (descElement) {
+        // Mostrar descripción corta en el catálogo
+        const shortDesc = closetData.descripcion.length > 80 
+            ? closetData.descripcion.substring(0, 80) + '...'
+            : closetData.descripcion;
+        descElement.textContent = shortDesc;
+    }
+    if (priceElement) {
+        priceElement.textContent = `Desde $${formatPrice(closetData.precio)}`;
+    }
+    if (imageElement) {
+        imageElement.src = closetData.imagen;
+        imageElement.alt = closetData.nombre;
+    }
+}
+
+// Formatear precio para mostrar con puntos
+function formatPrice(price) {
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+// Abrir modal detallado del closet
+function openClosetModal() {
+    if (!closetData) {
+        console.warn('No hay datos del closet disponibles');
+        return;
+    }
+
+    // Actualizar contenido del modal
+    updateModalContent();
+    
+    // Mostrar modal
+    const modal = document.getElementById('closetModal');
+    if (modal) {
+        modal.style.display = 'block';
+        document.body.style.overflow = 'hidden'; // Prevenir scroll del body
+    }
+}
+
+// Cerrar modal del closet
+function closeClosetModal() {
+    const modal = document.getElementById('closetModal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto'; // Restaurar scroll del body
+    }
+}
+
+// Actualizar contenido del modal con datos dinámicos
+function updateModalContent() {
+    if (!closetData) return;
+
+    // Elementos del modal
+    const elements = {
+        name: document.getElementById('modal-closet-name'),
+        description: document.getElementById('modal-closet-description'),
+        price: document.getElementById('modal-closet-price'),
+        image: document.getElementById('modal-closet-image'),
+        dimensions: document.getElementById('modal-closet-dimensions'),
+        time: document.getElementById('modal-closet-time'),
+        materials: document.getElementById('modal-closet-materials'),
+        colors: document.getElementById('modal-closet-colors'),
+        features: document.getElementById('modal-closet-features')
+    };
+
+    // Actualizar información básica
+    if (elements.name) elements.name.textContent = closetData.nombre;
+    if (elements.description) elements.description.textContent = closetData.descripcion;
+    if (elements.price) elements.price.textContent = `$${formatPrice(closetData.precio)}`;
+    if (elements.image) {
+        elements.image.src = closetData.imagen;
+        elements.image.alt = closetData.nombre;
+    }
+
+    // Actualizar dimensiones
+    if (elements.dimensions && closetData.dimensiones) {
+        elements.dimensions.textContent = `${closetData.dimensiones.min} - ${closetData.dimensiones.max} cm`;
+    }
+
+    // Actualizar tiempo de fabricación
+    if (elements.time) {
+        elements.time.textContent = `${closetData.tiempoFabricacion} días hábiles`;
+    }
+
+    // Actualizar materiales
+    if (elements.materials && closetData.materiales) {
+        elements.materials.innerHTML = '';
+        closetData.materiales.forEach(material => {
+            const tag = document.createElement('span');
+            tag.className = 'option-tag';
+            tag.textContent = material;
+            elements.materials.appendChild(tag);
+        });
+    }
+
+    // Actualizar colores
+    if (elements.colors && closetData.colores) {
+        elements.colors.innerHTML = '';
+        const colorMap = {
+            'Blanco Mate': '#F5F5F5',
+            'Roble Claro': '#DEB887',
+            'Nogal': '#8B4513',
+            'Wengué': '#2F2F2F'
+        };
+        
+        closetData.colores.forEach(color => {
+            const colorDiv = document.createElement('div');
+            colorDiv.className = 'color-option';
+            colorDiv.style.backgroundColor = colorMap[color] || '#ccc';
+            colorDiv.title = color;
+            elements.colors.appendChild(colorDiv);
+        });
+    }
+
+    // Actualizar características
+    if (elements.features && closetData.caracteristicas) {
+        elements.features.innerHTML = '';
+        const icons = [
+            'fas fa-lightbulb',
+            'fas fa-tshirt',
+            'fas fa-box',
+            'fas fa-mirror',
+            'fas fa-puzzle-piece',
+            'fas fa-star',
+            'fas fa-tools'
+        ];
+        
+        closetData.caracteristicas.forEach((feature, index) => {
+            const li = document.createElement('li');
+            const icon = icons[index % icons.length];
+            li.innerHTML = `<i class="${icon}"></i> ${feature}`;
+            elements.features.appendChild(li);
+        });
+    }
+}
+
+// Función para ir al formulario de órdenes
+function scrollToOrderForm() {
+    closeClosetModal();
+    setTimeout(() => {
+        const orderSection = document.getElementById('ordenes');
+        if (orderSection) {
+            orderSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, 300);
+}
+
+// Cerrar modal al hacer clic fuera de él
+window.addEventListener('click', (event) => {
+    const modal = document.getElementById('closetModal');
+    if (event.target === modal) {
+        closeClosetModal();
+    }
+});
+
+// Cerrar modal con tecla Escape
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        closeClosetModal();
+    }
 });
 
 console.log('🪑 DAJUSCA Script loaded successfully!');

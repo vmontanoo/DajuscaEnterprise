@@ -2169,3 +2169,361 @@ html {
         font-size: 2rem;
     }
 }
+
+/* ========================
+   ESTILOS PARA CATÁLOGO MEJORADO
+   ======================== */
+
+.catalog-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.feature-tag {
+    background: var(--accent-color);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* ========================
+   MODAL DETALLADO DEL PRODUCTO
+   ======================== */
+
+.product-modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+}
+
+.product-modal-content {
+    background-color: white;
+    margin: 2% auto;
+    padding: 0;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 1200px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+.close-modal {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    color: #666;
+    font-size: 35px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10;
+    transition: color 0.3s ease;
+}
+
+.close-modal:hover {
+    color: var(--primary-color);
+}
+
+.product-modal-header {
+    padding: 30px 30px 20px 30px;
+    border-bottom: 1px solid #e1e5e9;
+}
+
+.product-modal-header h2 {
+    margin: 0 0 15px 0;
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    color: var(--dark-color);
+}
+
+.product-rating {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.stars {
+    color: #ffd700;
+    font-size: 1.1rem;
+}
+
+.rating-text {
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.product-modal-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    padding: 30px;
+}
+
+.product-images .main-image {
+    width: 100%;
+    height: 400px;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.product-images .main-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.price-section {
+    margin-bottom: 30px;
+}
+
+.current-price {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+.price-note {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.product-description,
+.product-specs,
+.product-options,
+.product-features {
+    margin-bottom: 30px;
+}
+
+.product-description h3,
+.product-specs h3,
+.product-features h3 {
+    margin-bottom: 15px;
+    color: var(--dark-color);
+    font-weight: 600;
+    font-size: 1.3rem;
+}
+
+.product-description p {
+    color: #555;
+    line-height: 1.6;
+}
+
+.specs-grid {
+    display: grid;
+    gap: 15px;
+}
+
+.spec-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.spec-item i {
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    width: 20px;
+    text-align: center;
+}
+
+.spec-label {
+    display: block;
+    font-weight: 500;
+    color: var(--dark-color);
+    margin-bottom: 3px;
+}
+
+.spec-value {
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.option-group {
+    margin-bottom: 25px;
+}
+
+.option-group h4 {
+    margin-bottom: 12px;
+    color: var(--dark-color);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.options-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.option-tag {
+    background: #e9ecef;
+    color: var(--dark-color);
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.option-tag:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.color-options {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.color-option {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 3px solid #ddd;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.color-option:hover {
+    transform: scale(1.1);
+    border-color: var(--primary-color);
+}
+
+.features-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.features-list li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+    color: #555;
+}
+
+.features-list li:last-child {
+    border-bottom: none;
+}
+
+.features-list li i {
+    color: var(--accent-color);
+    width: 16px;
+    text-align: center;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.btn-primary,
+.btn-secondary {
+    flex: 1;
+    padding: 15px 25px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(224, 49, 49, 0.3);
+}
+
+.btn-secondary {
+    background: #f8f9fa;
+    color: var(--dark-color);
+    border: 2px solid #e9ecef;
+}
+
+.btn-secondary:hover {
+    background: var(--dark-color);
+    color: white;
+    border-color: var(--dark-color);
+}
+
+/* Responsive para el modal */
+@media (max-width: 968px) {
+    .product-modal-content {
+        width: 95%;
+        margin: 1% auto;
+        max-height: 95vh;
+    }
+    
+    .product-modal-body {
+        grid-template-columns: 1fr;
+        gap: 30px;
+        padding: 25px;
+    }
+    
+    .product-modal-header {
+        padding: 25px;
+    }
+    
+    .product-modal-header h2 {
+        font-size: 1.8rem;
+    }
+    
+    .current-price {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .close-modal {
+        top: 15px;
+        right: 20px;
+        font-size: 28px;
+    }
+    
+    .product-modal-header {
+        padding: 20px;
+    }
+    
+    .product-modal-body {
+        padding: 20px;
+    }
+    
+    .modal-actions {
+        flex-direction: column;
+    }
+    
+    .specs-grid {
+        grid-template-columns: 1fr;
+    }
+}

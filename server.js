@@ -213,7 +213,62 @@ app.get('/api/muebles', async (req, res) => {
     }
 });
 
-// 2. Obtener muebles por categoría
+// 2. Obtener mueble específico por ID
+app.get('/api/mueble/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const request = pool.request();
+        const result = await request
+            .input('id', sql.Int, id)
+            .query(`
+                SELECT 
+                    id,
+                    nombre,
+                    categoria,
+                    descripcion,
+                    precio_desde,
+                    imagen_url,
+                    dimensiones_min,
+                    dimensiones_max,
+                    materiales_disponibles,
+                    colores_disponibles,
+                    tiempo_fabricacion_dias,
+                    fecha_creacion
+                FROM Muebles 
+                WHERE id = @id AND activo = 1
+            `);
+        
+        if (result.recordset.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Mueble no encontrado'
+            });
+        }
+        
+        const mueble = result.recordset[0];
+        
+        // Procesar materiales y colores
+        if (mueble.materiales_disponibles) {
+            mueble.materiales = mueble.materiales_disponibles.split(',').map(m => m.trim());
+        }
+        if (mueble.colores_disponibles) {
+            mueble.colores = mueble.colores_disponibles.split(',').map(c => c.trim());
+        }
+        
+        res.json({
+            success: true,
+            data: mueble
+        });
+    } catch (err) {
+        console.error('Error obteniendo mueble:', err);
+        res.status(500).json({
+            success: false,
+            message: 'Error al obtener información del mueble'
+        });
+    }
+});
+
+// 3. Obtener muebles por categoría
 app.get('/api/muebles/categoria/:categoria', async (req, res) => {
     try {
         const { categoria } = req.params;
@@ -447,6 +502,77 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
     console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
     console.log(`📊 Base de datos: ${dbConfig.database}`);
+});
+
+// 6. Endpoint específico para obtener información del closet
+app.get('/api/closet-info', async (req, res) => {
+    try {
+        const request = pool.request();
+        const result = await request.query(`
+            SELECT 
+                id,
+                nombre,
+                categoria,
+                descripcion,
+                precio_desde,
+                imagen_url,
+                dimensiones_min,
+                dimensiones_max,
+                materiales_disponibles,
+                colores_disponibles,
+                tiempo_fabricacion_dias
+            FROM Muebles 
+            WHERE categoria = 'closets' AND activo = 1
+            ORDER BY id DESC
+        `);
+        
+        if (result.recordset.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Información de closet no encontrada'
+            });
+        }
+        
+        const closet = result.recordset[0];
+        
+        // Procesar datos para el frontend
+        const closetInfo = {
+            id: closet.id,
+            nombre: closet.nombre,
+            descripcion: closet.descripcion,
+            precio: closet.precio_desde,
+            imagen: closet.imagen_url || '/images/products/closets/closet-premium.jpg',
+            dimensiones: {
+                min: closet.dimensiones_min,
+                max: closet.dimensiones_max
+            },
+            materiales: closet.materiales_disponibles ? 
+                closet.materiales_disponibles.split(',').map(m => m.trim()) : [],
+            colores: closet.colores_disponibles ? 
+                closet.colores_disponibles.split(',').map(c => c.trim()) : [],
+            tiempoFabricacion: closet.tiempo_fabricacion_dias,
+            caracteristicas: [
+                'Sistema de iluminación LED integrado',
+                'Barras cromadas para colgado',
+                'Cajones con guías telescópicas',
+                'Espejo de cuerpo completo',
+                'Diseño modular adaptable',
+                'Acabados de primera calidad',
+                'Garantía de 2 años'
+            ]
+        };
+        
+        res.json({
+            success: true,
+            data: closetInfo
+        });
+    } catch (err) {
+        console.error('Error obteniendo información del closet:', err);
+        res.status(500).json({
+            success: false,
+            message: 'Error al obtener información del closet'
+        });
+    }
 });
 
 // ========================

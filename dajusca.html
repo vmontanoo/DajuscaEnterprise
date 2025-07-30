@@ -142,13 +142,14 @@
                 </div>
 
                 <!-- Closets -->
-                <div class="catalog-item" data-category="closets">
+                <div class="catalog-item" data-category="closets" id="closet-item">
                     <div class="catalog-image">
-                        <div class="image-placeholder closet-img">
-                            <i class="fas fa-door-open"></i>
-                        </div>
+                        <img id="closet-image" 
+                             src="/images/products/closets/closet-premium.jpg" 
+                             alt="Closet Empotrado Premium"
+                             style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
                         <div class="catalog-overlay">
-                            <button class="btn-view" onclick="openModal('closet-empotrado')">
+                            <button class="btn-view" onclick="openClosetModal()">
                                 <i class="fas fa-eye"></i>
                             </button>
                             <button class="btn-customize" onclick="openConfigurator('closets')">
@@ -157,9 +158,13 @@
                         </div>
                     </div>
                     <div class="catalog-info">
-                        <h3>Closets Empotrados</h3>
-                        <p>Closets personalizados que aprovechan cada centímetro</p>
-                        <div class="catalog-price">Desde $850.000</div>
+                        <h3 id="closet-name">Closet Empotrado Premium</h3>
+                        <p id="closet-description">Closet de lujo con acabados de primera calidad</p>
+                        <div class="catalog-price" id="closet-price">Desde $1.200.000</div>
+                        <div class="catalog-features">
+                            <span class="feature-tag">LED Integrado</span>
+                            <span class="feature-tag">Espejo Incluido</span>
+                        </div>
                     </div>
                 </div>
 
@@ -810,6 +815,124 @@
             </div>
         </div>
     </section>
+
+    <!-- Modal Detallado del Closet -->
+    <div id="closetModal" class="product-modal">
+        <div class="modal-content product-modal-content">
+            <span class="close-modal" onclick="closeClosetModal()">&times;</span>
+            
+            <div class="product-modal-header">
+                <h2 id="modal-closet-name">Closet Empotrado Premium</h2>
+                <div class="product-rating">
+                    <div class="stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <span class="rating-text">(4.9/5 - 127 reseñas)</span>
+                </div>
+            </div>
+            
+            <div class="product-modal-body">
+                <div class="product-images">
+                    <div class="main-image">
+                        <img id="modal-closet-image" 
+                             src="/images/products/closets/closet-premium.jpg" 
+                             alt="Closet Premium">
+                    </div>
+                </div>
+                
+                <div class="product-details">
+                    <div class="price-section">
+                        <div class="current-price" id="modal-closet-price">$1.200.000</div>
+                        <div class="price-note">Precio base - Varía según dimensiones</div>
+                    </div>
+                    
+                    <div class="product-description">
+                        <h3>Descripción</h3>
+                        <p id="modal-closet-description">
+                            Closet empotrado de lujo con acabados de primera calidad...
+                        </p>
+                    </div>
+                    
+                    <div class="product-specs">
+                        <h3>Especificaciones</h3>
+                        <div class="specs-grid">
+                            <div class="spec-item">
+                                <i class="fas fa-ruler-combined"></i>
+                                <div>
+                                    <span class="spec-label">Dimensiones</span>
+                                    <span class="spec-value" id="modal-closet-dimensions">150x60x220 - 400x80x250 cm</span>
+                                </div>
+                            </div>
+                            <div class="spec-item">
+                                <i class="fas fa-clock"></i>
+                                <div>
+                                    <span class="spec-label">Tiempo de fabricación</span>
+                                    <span class="spec-value" id="modal-closet-time">15 días hábiles</span>
+                                </div>
+                            </div>
+                            <div class="spec-item">
+                                <i class="fas fa-shield-alt"></i>
+                                <div>
+                                    <span class="spec-label">Garantía</span>
+                                    <span class="spec-value">2 años</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="product-options">
+                        <div class="option-group">
+                            <h4>Materiales disponibles</h4>
+                            <div class="options-list" id="modal-closet-materials">
+                                <span class="option-tag">MDF</span>
+                                <span class="option-tag">Melamina</span>
+                                <span class="option-tag">Aluminio</span>
+                                <span class="option-tag">Vidrio Templado</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-group">
+                            <h4>Colores disponibles</h4>
+                            <div class="color-options" id="modal-closet-colors">
+                                <div class="color-option" style="background-color: #F5F5F5;" title="Blanco Mate"></div>
+                                <div class="color-option" style="background-color: #DEB887;" title="Roble Claro"></div>
+                                <div class="color-option" style="background-color: #8B4513;" title="Nogal"></div>
+                                <div class="color-option" style="background-color: #2F2F2F;" title="Wengué"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="product-features">
+                        <h3>Características principales</h3>
+                        <ul class="features-list" id="modal-closet-features">
+                            <li><i class="fas fa-lightbulb"></i> Sistema de iluminación LED integrado</li>
+                            <li><i class="fas fa-tshirt"></i> Barras cromadas para colgado</li>
+                            <li><i class="fas fa-box"></i> Cajones con guías telescópicas</li>
+                            <li><i class="fas fa-mirror"></i> Espejo de cuerpo completo</li>
+                            <li><i class="fas fa-puzzle-piece"></i> Diseño modular adaptable</li>
+                            <li><i class="fas fa-star"></i> Acabados de primera calidad</li>
+                            <li><i class="fas fa-tools"></i> Garantía de 2 años</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button class="btn-primary" onclick="openConfigurator('closets')">
+                            <i class="fas fa-cog"></i>
+                            Personalizar
+                        </button>
+                        <button class="btn-secondary" onclick="scrollToOrderForm()">
+                            <i class="fas fa-envelope"></i>
+                            Solicitar Cotización
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="footer">

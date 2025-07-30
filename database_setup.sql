@@ -66,13 +66,13 @@ CREATE TABLE Muebles (
 );
 
 -- Insertar muebles iniciales
-INSERT INTO Muebles (nombre, categoria, descripcion, precio_desde, dimensiones_min, dimensiones_max, materiales_disponibles, colores_disponibles) VALUES
-('Repisas Flotantes', 'repisas', 'Elegantes repisas flotantes que maximizan el espacio', 45000.00, '50x20x15', '200x40x25', 'madera,metal', '#8B4513,#D2691E,#654321'),
-('Gaveteros Modernos', 'gaveteros', 'Gaveteros funcionales con diseño contemporáneo', 180000.00, '60x40x80', '120x60x150', 'madera,metal', '#8B4513,#654321,#2F4F4F'),
-('Closets Empotrados', 'closets', 'Closets personalizados que aprovechan cada centímetro', 850000.00, '100x50x200', '300x80x250', 'madera,metal,vidrio', '#8B4513,#D2691E,#FFFFFF'),
-('Centros de Entretenimiento', 'entretenimiento', 'Muebles para TV con estilo y funcionalidad', 320000.00, '100x30x40', '250x50x80', 'madera,metal,vidrio', '#8B4513,#2F4F4F,#000000'),
-('Cocinas Integrales', 'cocina', 'Cocinas completas diseñadas a tu medida', 1500000.00, '200x60x200', '500x80x250', 'madera,metal', '#8B4513,#FFFFFF,#654321'),
-('Escritorios Ejecutivos', 'escritorios', 'Espacios de trabajo para la productividad', 280000.00, '100x50x70', '200x80x80', 'madera,metal,vidrio', '#8B4513,#654321,#4A4A4A');
+INSERT INTO Muebles (nombre, categoria, descripcion, precio_desde, imagen_url, dimensiones_min, dimensiones_max, materiales_disponibles, colores_disponibles) VALUES
+('Repisas Flotantes', 'repisas', 'Elegantes repisas flotantes que maximizan el espacio', 45000.00, '/images/products/repisas/repisa-flotante.jpg', '50x20x15', '200x40x25', 'madera,metal', '#8B4513,#D2691E,#654321'),
+('Gaveteros Modernos', 'gaveteros', 'Gaveteros funcionales con diseño contemporáneo', 180000.00, '/images/products/gaveteros/gavetero-moderno.jpg', '60x40x80', '120x60x150', 'madera,metal', '#8B4513,#654321,#2F4F4F'),
+('Closet Empotrado Premium', 'closets', 'Closet empotrado de lujo con acabados de primera calidad. Incluye sistema de iluminación LED, barras cromadas, cajones con guías telescópicas y espejo de cuerpo completo. Diseño modular adaptable a cualquier espacio.', 1200000.00, '/images/products/closets/closet-premium.jpg', '150x60x220', '400x80x250', 'MDF,Melamina,Aluminio,Vidrio Templado', 'Blanco Mate,Roble Claro,Nogal,Wengué'),
+('Centros de Entretenimiento', 'entretenimiento', 'Muebles para TV con estilo y funcionalidad', 320000.00, '/images/products/entretenimiento/centro-tv.jpg', '100x30x40', '250x50x80', 'madera,metal,vidrio', '#8B4513,#2F4F4F,#000000'),
+('Cocinas Integrales', 'cocina', 'Cocinas completas diseñadas a tu medida', 1500000.00, '/images/products/cocinas/cocina-integral.jpg', '200x60x200', '500x80x250', 'madera,metal', '#8B4513,#FFFFFF,#654321'),
+('Escritorios Ejecutivos', 'escritorios', 'Espacios de trabajo para la productividad', 280000.00, '/images/products/escritorios/escritorio-ejecutivo.jpg', '100x50x70', '200x80x80', 'madera,metal,vidrio', '#8B4513,#654321,#4A4A4A');
 
 -- ============================================
 -- TABLA: Proyectos
