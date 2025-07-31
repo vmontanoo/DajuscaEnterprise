@@ -154,7 +154,7 @@ const galleryUpload = multer({
 // CONFIGURACIÓN NODEMAILER
 // ========================
 
-const transporter = nodemailer.createTransporter({
+const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST || 'smtp.gmail.com',
     port: parseInt(process.env.EMAIL_PORT) || 587,
     secure: process.env.EMAIL_SECURE === 'true', // true para 465, false para otros puertos
@@ -493,7 +493,7 @@ app.post('/api/contacto', async (req, res) => {
 
 // Servir la página principal
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'dajusca.html'));
+    res.sendFile(path.join(__dirname, 'dajusca.html'));
 });
 
 // Manejo de errores global
