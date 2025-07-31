@@ -154,7 +154,7 @@ const galleryUpload = multer({
 // CONFIGURACIÓN NODEMAILER
 // ========================
 
-const transporter = nodemailer.createTransporter({
+const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST || 'smtp.gmail.com',
     port: parseInt(process.env.EMAIL_PORT) || 587,
     secure: process.env.EMAIL_SECURE === 'true', // true para 465, false para otros puertos
@@ -165,14 +165,19 @@ const transporter = nodemailer.createTransporter({
 });
 
 // Verificar configuración de email (opcional)
+let emailConfigured = false;
 if (process.env.EMAIL_USER && process.env.EMAIL_PASSWORD) {
     transporter.verify((error, success) => {
         if (error) {
             console.log('❌ Error en configuración de email:', error);
+            emailConfigured = false;
         } else {
             console.log('✅ Servidor de email configurado correctamente');
+            emailConfigured = true;
         }
     });
+} else {
+    console.log('⚠️ Email no configurado - Modo testing activado');
 }
 
 // Función para enviar email de orden
@@ -884,6 +889,11 @@ app.delete('/api/gallery-image/:filename', async (req, res) => {
             message: 'Error al eliminar la imagen'
         });
     }
+});
+
+// Ruta principal para servir el archivo HTML
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dajusca.html'));
 });
 
 // Iniciar servidor
