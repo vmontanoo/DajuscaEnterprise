@@ -172,15 +172,23 @@ const transporter = nodemailer.createTransport({
 if (process.env.EMAIL_USER && process.env.EMAIL_PASSWORD) {
     transporter.verify((error, success) => {
         if (error) {
-            console.log('❌ Error en configuración de email:', error);
+            console.log('❌ Error en configuración de email:', error.message);
+            console.log('⚠️  La aplicación funcionará sin envío de emails');
         } else {
             console.log('✅ Servidor de email configurado correctamente');
         }
     });
+} else {
+    console.log('⚠️  Email no configurado - La aplicación funcionará sin envío de emails');
 }
 
 // Función para enviar email de orden
 async function sendOrderEmail(orderData, imagePath) {
+    // Verificar si el email está configurado
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+        console.log('⚠️  Email no configurado - Orden guardada pero no se envió notificación');
+        return { success: false, message: 'Email no configurado' };
+    }
     const mailOptions = {
         from: process.env.EMAIL_FROM,
         to: process.env.OWNER_EMAIL,
